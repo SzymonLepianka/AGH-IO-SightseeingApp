@@ -1,9 +1,9 @@
 package com.accessingmysql;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import javax.persistence.*;
 
 @Entity // This tells Hibernate to make a table out of this class
 @Table(name = "PointsOfRoute")
@@ -11,28 +11,37 @@ public class PointsOfRoute {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(unique = true)
-    @OneToMany(mappedBy = "PointsOfRoute", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Long PointNumber;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "Routes_ID", nullable = false)
-    private Long RouteID;
-    @JoinColumn(name = "Places_ID", nullable = false)
-    private Long PlaceID;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "RouteID", nullable = false)
+    private Routes route;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "PlaceID", nullable = false)
+    private Places place;
 
-    public Long getId() {
-        return ID;
+    public Long getPointNumber() {
+        return PointNumber;
     }
 
-    public void setId(Long ID) {
-        this.ID = ID;
+    public Routes getRoute() {
+        return route;
     }
 
-    public String getRouteID() {
-        return RouteID;
+    public Places getPlace() {
+        return place;
     }
 
-    public String getPlaceID() {
-        return PlaceID;
+    public void setPointNumber(Long pointNumber) {
+        PointNumber = pointNumber;
     }
 
+    public void setRoute(Routes route) {
+        this.route = route;
+    }
+
+    public void setPlace(Places place) {
+        this.place = place;
+    }
 }

@@ -1,9 +1,9 @@
 package com.accessingmysql;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.sun.istack.NotNull;
+
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity // This tells Hibernate to make a table out of this class
 @Table(name = "Users")
@@ -11,7 +11,6 @@ public class Users {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(unique = true)
-    @OneToMany(mappedBy = "Users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Long ID;
     @NotNull
     @Column(unique = true)

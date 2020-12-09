@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/AGH-IO-SightseeingApp.iml" filepath="$PROJECT_DIR$/.idea/AGH-IO-SightseeingApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SightseeingApp.iml" filepath="$PROJECT_DIR$/.idea/modules/SightseeingApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SightseeingApp.main.iml" filepath="$PROJECT_DIR$/.idea/modules/SightseeingApp.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SightseeingApp.test.iml" filepath="$PROJECT_DIR$/.idea/modules/SightseeingApp.test.iml" />
     </modules>
   </component>
 </project>

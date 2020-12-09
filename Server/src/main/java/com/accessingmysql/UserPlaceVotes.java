@@ -1,35 +1,47 @@
 package com.accessingmysql;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "UserPlaceVotes")
 public class UserPlaceVotes {
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(unique = true)
+    private Long ID;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "Users_ID", nullable = false)
-    private Long UserID;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "UsersID", nullable = false)
+    private Users user;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "Places_ID", nullable = false)
-    private Long PlaceID;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "PlaceID", nullable = false)
+    private Places place;
 
-    public Long getId() {
-        return UserID;
+    public Long getID() {
+        return ID;
     }
 
-    public void setId(Long UserID) {
-        this.UserID = UserID;
+    public Users getUser() {
+        return user;
     }
 
-    public Long getPlaceID() {
-        return PlaceID;
+    public Places getPlace() {
+        return place;
     }
 
-    public void setUsername(Long PlaceID) {
-        this.PlaceID = PlaceID;
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
+    public void setUser(Users user) {
+        this.user = user;
+    }
 
+    public void setPlace(Places place) {
+        this.place = place;
+    }
 }

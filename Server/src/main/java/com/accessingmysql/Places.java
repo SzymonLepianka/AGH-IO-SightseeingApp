@@ -1,9 +1,8 @@
 package com.accessingmysql;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.sun.istack.NotNull;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "Places")
@@ -11,18 +10,13 @@ public class Places {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(unique = true)
-    @OneToMany(mappedBy = "Places", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Long ID;
     @NotNull
     @Column(unique = true)
     private String Name;
-    @NotNull
     private Boolean ValidPlace;
-    @NotNull
     private Float Latitude;
-    @NotNull
     private Float Longitude;
-    @NotNull
     private Long GoogleMapsID;
     private Long AccumulatedScore;
     private Long UsersVoted;
@@ -48,7 +42,7 @@ public class Places {
         return ValidPlace;
     }
 
-    public void setValiudPlace(Boolean ValidPlace) {
+    public void setValidPlace(Boolean ValidPlace) {
         this.ValidPlace = ValidPlace;
     }
 
@@ -64,15 +58,15 @@ public class Places {
         return Longitude;
     }
 
-    public void setLatitude(Float Longitude) {
+    public void setLongitude(Float Longitude) {
         this.Longitude = Longitude;
     }
 
-    public Float getGoogleMapsID() {
+    public Long getGoogleMapsID() {
         return GoogleMapsID;
     }
 
-    public void setLatitude(Float GoogleMapsID) {
+    public void setGoogleMapsID(Long GoogleMapsID) {
         this.GoogleMapsID = GoogleMapsID;
     }
 
