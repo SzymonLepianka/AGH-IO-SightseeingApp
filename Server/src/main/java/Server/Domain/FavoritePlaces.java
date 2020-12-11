@@ -1,44 +1,44 @@
-package com.accessingmysql;
-
+package Server.Domain;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
-@Entity // This tells Hibernate to make a table out of this class
-@Table(name = "PointsOfRoute")
-public class PointsOfRoute {
+
+@Entity
+@Table(name = "FavouritePlaces")
+public class FavoritePlaces {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(unique = true)
-    private Long PointNumber;
+    private Long id;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "RouteID", nullable = false)
-    private Routes route;
+    @JoinColumn(name = "UsersID", nullable = false)
+    private Users user;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "PlaceID", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Places place;
 
-    public Long getPointNumber() {
-        return PointNumber;
+    public Long getID() {
+        return id;
     }
 
-    public Routes getRoute() {
-        return route;
+    public Users getUser() {
+        return user;
     }
 
     public Places getPlace() {
         return place;
     }
 
-    public void setPointNumber(Long pointNumber) {
-        PointNumber = pointNumber;
+    public void setID(Long ID) {
+        this.id = id;
     }
 
-    public void setRoute(Routes route) {
-        this.route = route;
+    public void setUser(Users user) {
+        this.user = user;
     }
 
     public void setPlace(Places place) {

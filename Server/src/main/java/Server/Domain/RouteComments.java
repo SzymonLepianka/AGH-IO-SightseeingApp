@@ -1,4 +1,4 @@
-package com.accessingmysql;
+package Server.Domain;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;

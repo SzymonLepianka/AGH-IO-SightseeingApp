@@ -1,4 +1,4 @@
-package com.accessingmysql;
+package Server.Domain;
 
 import com.sun.istack.NotNull;
 

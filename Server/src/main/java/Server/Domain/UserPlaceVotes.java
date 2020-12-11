@@ -1,17 +1,17 @@
-package com.accessingmysql;
+package Server.Domain;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
-@Entity // This tells Hibernate to make a table out of this class
-@Table(name = "PlacesComments")
-public class PlacesComments {
+@Entity
+@Table(name = "UserPlaceVotes")
+public class UserPlaceVotes {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(unique = true)
-    private Long ID;
+    private Long id;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "UsersID", nullable = false)
@@ -20,10 +20,9 @@ public class PlacesComments {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "PlaceID", nullable = false)
     private Places place;
-    private String Content;
 
-    public Long getID() {
-        return ID;
+    public Long getId() {
+        return id;
     }
 
     public Users getUser() {
@@ -34,12 +33,8 @@ public class PlacesComments {
         return place;
     }
 
-    public String getContent() {
-        return Content;
-    }
-
-    public void setID(Long ID) {
-        this.ID = ID;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setUser(Users user) {
@@ -48,9 +43,5 @@ public class PlacesComments {
 
     public void setPlace(Places place) {
         this.place = place;
-    }
-
-    public void setContent(String content) {
-        Content = content;
     }
 }
