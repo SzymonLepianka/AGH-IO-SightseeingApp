@@ -1,5 +1,6 @@
 package Server.Controllers;
 
+import Server.Domain.RoutesRepository;
 import Server.Domain.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(path="/routes")
 public class RoutesController {
     @Autowired
-    private UsersRepository usersRepository;
+    private RoutesRepository routesRepository;
 
     @GetMapping(path="/{id}")
     public @ResponseBody String getUsers(@PathVariable String id){
