@@ -18,4 +18,7 @@ public class UsersController {
     public @ResponseBody String getUsers(@PathVariable String id){
         return id;
     }
+
+    //TODO user voted for something : boolean, database table: UserPlaceVotes
+    //Can not undo vote
 }

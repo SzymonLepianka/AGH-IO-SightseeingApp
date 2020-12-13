@@ -19,4 +19,8 @@ public class RoutesController {
 
         return id;
     }
+
+    //TODO /routes/{id}/pointsOfRoute get, post, delete
+
+    //TODO /routes/{id}/comments get, post, delete
 }
