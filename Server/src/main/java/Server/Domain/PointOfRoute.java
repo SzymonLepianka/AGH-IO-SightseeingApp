@@ -53,4 +53,8 @@ public class PointOfRoute {
     public void setPlace(Place place) {
         this.place = place;
     }
+
+    public void setPointNumber(Long pointNumber) {
+        this.pointNumber = pointNumber;
+    }
 }

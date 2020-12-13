@@ -9,6 +9,10 @@ import java.util.Set;
 @Entity // This tells Hibernate to make a table out of this class
 @Table(name = "Routes")
 public class Route {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(unique = true, name = "route_id")
@@ -75,5 +79,9 @@ public class Route {
 
     public void setRouteComments(Set<RouteComment> routeComments) {
         this.routeComments = routeComments;
+    }
+
+    public Long getId() {
+        return id;
     }
 }
