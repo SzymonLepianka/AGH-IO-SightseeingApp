@@ -7,41 +7,43 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "FavouritePlaces")
-public class FavoritePlaces {
+public class FavoritePlace {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(unique = true)
+    @Column(unique = true, name = "favourite_place_id")
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "UsersID", nullable = false)
-    private Users user;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "PlaceID", nullable = false)
+    @JoinColumn(name = "place_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Places place;
+    private Place place;
 
     public Long getID() {
         return id;
     }
 
-    public Users getUser() {
+    public User getUser() {
         return user;
     }
 
-    public Places getPlace() {
+    public Place getPlace() {
         return place;
     }
 
-    public void setID(Long ID) {
+    public void setID(Long id) {
         this.id = id;
     }
 
-    public void setUser(Users user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
-    public void setPlace(Places place) {
+    public void setPlace(Place place) {
         this.place = place;
     }
 }

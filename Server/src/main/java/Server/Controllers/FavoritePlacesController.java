@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping(path="/FavoritePlaces")
+@RequestMapping(path="/favoritePlaces")
 public class FavoritePlacesController {
     @Autowired
     private UsersRepository usersRepository;

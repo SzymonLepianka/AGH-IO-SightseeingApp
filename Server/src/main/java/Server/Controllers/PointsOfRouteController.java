@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping(path="/PointsOfRoute")
+@RequestMapping(path="/pointsOfRoute")
 public class PointsOfRouteController {
     @Autowired
     private UsersRepository usersRepository;

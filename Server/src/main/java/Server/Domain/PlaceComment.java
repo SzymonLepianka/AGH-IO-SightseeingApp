@@ -6,31 +6,34 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 
 @Entity // This tells Hibernate to make a table out of this class
-@Table(name = "PlacesComments")
-public class PlacesComments {
+@Table(name = "PlaceComments")
+public class PlaceComment {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(unique = true)
-    private Long ID;
+    @Column(unique = true, name = "place_comment_id")
+    private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "UsersID", nullable = false)
-    private Users user;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "PlaceID", nullable = false)
-    private Places place;
+    @JoinColumn(name = "place_id", nullable = false)
+    private Place place;
+
     private String content;
 
     public Long getID() {
-        return ID;
+        return id;
     }
 
-    public Users getUser() {
+    public User getUser() {
         return user;
     }
 
-    public Places getPlace() {
+    public Place getPlace() {
         return place;
     }
 
@@ -38,15 +41,15 @@ public class PlacesComments {
         return content;
     }
 
-    public void setID(Long ID) {
-        this.ID = ID;
+    public void setID(Long id) {
+        this.id = id;
     }
 
-    public void setUser(Users user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
-    public void setPlace(Places place) {
+    public void setPlace(Place place) {
         this.place = place;
     }
 

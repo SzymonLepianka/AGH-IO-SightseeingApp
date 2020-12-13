@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping(path="/PlacesComments")
+@RequestMapping(path="/placesComments")
 public class PlacesCommentsController {
     @Autowired
     private UsersRepository usersRepository;
