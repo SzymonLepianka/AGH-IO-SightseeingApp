@@ -14,15 +14,14 @@ public class Place {
     private Long id;
 
     @NotNull
-    @Column(unique = true)
     private String name;
 
     private Boolean validPlace;
     private Float latitude;
     private Float longitude;
     private Long googleMapsId;
-    private Long accumulatedScore;
-    private Long usersVoted;
+    private Long accumulatedScore = 0L;
+    private Long usersVoted = 0L;
     private String description;
 
     @OneToMany(mappedBy = "place", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

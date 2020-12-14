@@ -23,8 +23,8 @@ public class Route {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Long accumulatedScore;
-    private Long usersVoted;
+    private Long accumulatedScore = 0L;
+    private Long usersVoted = 0L;
     private Boolean isPublic;
 
     @OneToMany(mappedBy = "route", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

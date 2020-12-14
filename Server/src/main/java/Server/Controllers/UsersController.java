@@ -72,7 +72,7 @@ public class UsersController {
             }
             return hashtext;
         } catch (NoSuchAlgorithmException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Password hasing problem");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Password hashing problem");
         }
     }
 
