@@ -115,7 +115,14 @@ public class UsersController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Place not found");
         }
         var place = dbResponsePlace.get();
-        return  String.valueOf(user.getUserPlaceVotes().contains(place));
+        var result = false;
+        for (var votePlace : user.getUserPlaceVotes()) {
+            if(votePlace.getPlace() == place) {
+                result = true;
+                break;
+            }
+        }
+        return  String.valueOf(result);
     }
 
     @PostMapping(path = "/{user_id}/placeVotes/{place_id}")
@@ -130,8 +137,10 @@ public class UsersController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Place not found");
         }
         var place = dbResponsePlace.get();
-        if(user.getUserPlaceVotes().contains(place)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already voted for that place");
+        for (var votePlace : user.getUserPlaceVotes()) {
+            if(votePlace.getPlace() == place) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already voted for that place");
+            }
         }
         var placeUserVotedFor = new UserPlaceVote();
         place.setAccumulatedScore(place.getAccumulatedScore() + Integer.parseInt(vote));
@@ -151,12 +160,19 @@ public class UsersController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         var user = dbResponseUser.get();
-        var dbResponseRoute = this.placesRepository.findById(Long.parseLong(route_id));
+        var dbResponseRoute = this.routesRepository.findById(Long.parseLong(route_id));
         if(dbResponseRoute.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found");
         }
         var route = dbResponseRoute.get();
-        return  String.valueOf(user.getUserRouteVotes().contains(route));
+        var result = false;
+        for (var voteRoute : user.getUserRouteVotes()) {
+            if(voteRoute.getRoute() == route) {
+                result = true;
+                break;
+            }
+        }
+        return  String.valueOf(result);
     }
 
     @PostMapping(path = "/{user_id}/routeVotes/{route_id}")
@@ -171,8 +187,10 @@ public class UsersController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found");
         }
         var route = dbResponseRoute.get();
-        if(user.getUserRouteVotes().contains(route)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already voted for that route");
+        for (var voteRoute : user.getUserRouteVotes()) {
+            if(voteRoute.getRoute() == route) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already voted for that route");
+            }
         }
         var routeUserVotedFor = new UserRouteVote();
         route.setAccumulatedScore(route.getAccumulatedScore() + Integer.parseInt(vote));
