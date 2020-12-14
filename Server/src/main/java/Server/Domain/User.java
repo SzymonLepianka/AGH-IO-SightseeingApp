@@ -42,6 +42,9 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Route> routes;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<UserRouteVote> userRouteVotes;
+
     public Long getId() {
         return id;
     }
@@ -136,5 +139,13 @@ public class User {
 
     public void setRoutes(Set<Route> routes) {
         this.routes = routes;
+    }
+
+    public Set<UserRouteVote> getUserRouteVotes() {
+        return userRouteVotes;
+    }
+
+    public void setUserRouteVotes(Set<UserRouteVote> userRouteVotes) {
+        this.userRouteVotes = userRouteVotes;
     }
 }

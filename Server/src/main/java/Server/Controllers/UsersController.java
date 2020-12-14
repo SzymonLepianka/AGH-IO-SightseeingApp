@@ -1,7 +1,6 @@
 package Server.Controllers;
 
-import Server.Domain.User;
-import Server.Domain.UsersRepository;
+import Server.Domain.*;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +18,17 @@ import java.util.Date;
 @Controller
 @RequestMapping(path="/users")
 public class UsersController {
+    //TODO Maybe move repositories to singleton/static class?
     @Autowired
     private UsersRepository usersRepository;
+
+    @Autowired
+    private PlacesRepository placesRepository;
+
+    @Autowired
+    private UserPlaceVotesRepository userPlaceVotesRepository;
+
+    //TODO Change return type from String to whatever type there should be. (All controllers)
 
     private JSONObject buildJsonUser(User user) {
         var userJson = new JSONObject();
@@ -34,7 +42,7 @@ public class UsersController {
     }
 
     @GetMapping(path="/{id}")
-    public @ResponseBody String getUsers(@PathVariable String id){
+    public @ResponseBody JSONObject getUsers(@PathVariable String id){
         var dbResponse = this.usersRepository.findById(Long.parseLong(id));
         if(dbResponse.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
@@ -42,7 +50,7 @@ public class UsersController {
         var user = dbResponse.get();
         var response = new JSONObject();
         response.put(user.getId().toString(), this.buildJsonUser(user));
-        return  response.toString();
+        return  response;
     }
 
     //TODO Move it to model?
@@ -69,7 +77,7 @@ public class UsersController {
         user.setFirstName(firstname);
         user.setSurname(surname);
         try {
-            user.setBirthDate(new SimpleDateFormat("05.02.1999").parse(birthdate));
+            user.setBirthDate(new SimpleDateFormat("dd.MM.yyyy").parse(birthdate));
         } catch (ParseException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Date parse error");
         }
@@ -79,17 +87,54 @@ public class UsersController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public @ResponseBody String deleteUser(@PathVariable String id) {
+    public @ResponseBody HttpStatus deleteUser(@PathVariable String id) {
         var dbResponse = this.usersRepository.findById(Long.parseLong(id));
         if(dbResponse.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         var user = dbResponse.get();
         this.usersRepository.delete(user);
-        return "ok";
+        return HttpStatus.OK;
     }
 
-    //TODO user voted for something : boolean, database table: UserPlaceVotes
+    @GetMapping(path = "/{user_id}/placeVotes/{place_id}")
+    public @ResponseBody Boolean didUserVoteForPlace(@PathVariable String user_id, @PathVariable String place_id) {
+        var dbResponseUser = this.usersRepository.findById(Long.parseLong(user_id));
+        if(dbResponseUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        var user = dbResponseUser.get();
+        var dbResponsePlace = this.placesRepository.findById(Long.parseLong(place_id));
+        if(dbResponsePlace.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Place not found");
+        }
+        var place = dbResponsePlace.get();
+        return  user.getUserPlaceVotes().contains(place);
+    }
+
+    @PostMapping(path = "/{user_id}/placeVotes/{place_id}")
+    public @ResponseBody HttpStatus userVoteForPlace(@PathVariable String user_id, @PathVariable String place_id, @RequestParam int vote){
+        var dbResponseUser = this.usersRepository.findById(Long.parseLong(user_id));
+        if(dbResponseUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        var user = dbResponseUser.get();
+        var dbResponsePlace = this.placesRepository.findById(Long.parseLong(place_id));
+        if(dbResponsePlace.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Place not found");
+        }
+        var place = dbResponsePlace.get();
+        if(user.getUserPlaceVotes().contains(place)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already voted for that place");
+        }
+        var placeUserVotedFor = new UserPlaceVote();
+        place.setAccumulatedScore(place.getAccumulatedScore() + vote);
+        place.setUsersVoted(place.getUsersVoted() + 1);
+        placeUserVotedFor.setPlace(place);
+        placeUserVotedFor.setUser(user);
+        this.userPlaceVotesRepository.save(placeUserVotedFor);
+        return HttpStatus.OK;
+    }
     //TODO user voted for something : boolean, database table: UserRouteVotes
     //Can not undo vote
 
