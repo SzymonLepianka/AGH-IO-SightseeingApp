@@ -102,7 +102,7 @@ public class PlacesController {
         return response.toString();
     }
 
-    @PostMapping(path = "/{id}/comments")
+    @PostMapping(path = "/{placeId}/comments")
     public @ResponseBody String addPlaceComment(@PathVariable String placeId, @RequestParam String userId, @RequestParam String content) {
         var comment = new PlaceComment();
         var dbResponseUser = this.usersRepository.findById(Long.parseLong(userId));

@@ -26,7 +26,13 @@ public class UsersController {
     private PlacesRepository placesRepository;
 
     @Autowired
+    private RoutesRepository routesRepository;
+
+    @Autowired
     private UserPlaceVotesRepository userPlaceVotesRepository;
+
+    @Autowired
+    private UserRouteVotesRepository userRouteVotesRepository;
 
     //TODO Change return type from String to whatever type there should be. (All controllers)
 
@@ -42,7 +48,7 @@ public class UsersController {
     }
 
     @GetMapping(path="/{id}")
-    public @ResponseBody JSONObject getUsers(@PathVariable String id){
+    public @ResponseBody String getUser(@PathVariable String id){
         var dbResponse = this.usersRepository.findById(Long.parseLong(id));
         if(dbResponse.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
@@ -50,7 +56,7 @@ public class UsersController {
         var user = dbResponse.get();
         var response = new JSONObject();
         response.put(user.getId().toString(), this.buildJsonUser(user));
-        return  response;
+        return response.toString();
     }
 
     //TODO Move it to model?
@@ -87,18 +93,18 @@ public class UsersController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public @ResponseBody HttpStatus deleteUser(@PathVariable String id) {
+    public @ResponseBody String deleteUser(@PathVariable String id) {
         var dbResponse = this.usersRepository.findById(Long.parseLong(id));
         if(dbResponse.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         var user = dbResponse.get();
         this.usersRepository.delete(user);
-        return HttpStatus.OK;
+        return "ok";
     }
 
     @GetMapping(path = "/{user_id}/placeVotes/{place_id}")
-    public @ResponseBody Boolean didUserVoteForPlace(@PathVariable String user_id, @PathVariable String place_id) {
+    public @ResponseBody String didUserVoteForPlace(@PathVariable String user_id, @PathVariable String place_id) {
         var dbResponseUser = this.usersRepository.findById(Long.parseLong(user_id));
         if(dbResponseUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
@@ -109,11 +115,11 @@ public class UsersController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Place not found");
         }
         var place = dbResponsePlace.get();
-        return  user.getUserPlaceVotes().contains(place);
+        return  String.valueOf(user.getUserPlaceVotes().contains(place));
     }
 
     @PostMapping(path = "/{user_id}/placeVotes/{place_id}")
-    public @ResponseBody HttpStatus userVoteForPlace(@PathVariable String user_id, @PathVariable String place_id, @RequestParam int vote){
+    public @ResponseBody String userVoteForPlace(@PathVariable String user_id, @PathVariable String place_id, @RequestParam String vote){
         var dbResponseUser = this.usersRepository.findById(Long.parseLong(user_id));
         if(dbResponseUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
@@ -128,15 +134,55 @@ public class UsersController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already voted for that place");
         }
         var placeUserVotedFor = new UserPlaceVote();
-        place.setAccumulatedScore(place.getAccumulatedScore() + vote);
+        place.setAccumulatedScore(place.getAccumulatedScore() + Integer.parseInt(vote));
         place.setUsersVoted(place.getUsersVoted() + 1);
         placeUserVotedFor.setPlace(place);
         placeUserVotedFor.setUser(user);
+        this.placesRepository.save(place);
         this.userPlaceVotesRepository.save(placeUserVotedFor);
-        return HttpStatus.OK;
+        return "ok";
     }
+
     //TODO user voted for something : boolean, database table: UserRouteVotes
-    //Can not undo vote
+    @GetMapping(path = "/{user_id}/routeVotes/{route_id}")
+    public @ResponseBody String didUserVoteForRoute(@PathVariable String user_id, @PathVariable String route_id) {
+        var dbResponseUser = this.usersRepository.findById(Long.parseLong(user_id));
+        if(dbResponseUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        var user = dbResponseUser.get();
+        var dbResponseRoute = this.placesRepository.findById(Long.parseLong(route_id));
+        if(dbResponseRoute.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found");
+        }
+        var route = dbResponseRoute.get();
+        return  String.valueOf(user.getUserRouteVotes().contains(route));
+    }
+
+    @PostMapping(path = "/{user_id}/routeVotes/{route_id}")
+    public @ResponseBody String userVoteForRoute(@PathVariable String user_id, @PathVariable String route_id, @RequestParam String vote){
+        var dbResponseUser = this.usersRepository.findById(Long.parseLong(user_id));
+        if(dbResponseUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        var user = dbResponseUser.get();
+        var dbResponseRoute = this.routesRepository.findById(Long.parseLong(route_id));
+        if(dbResponseRoute.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found");
+        }
+        var route = dbResponseRoute.get();
+        if(user.getUserRouteVotes().contains(route)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already voted for that route");
+        }
+        var routeUserVotedFor = new UserRouteVote();
+        route.setAccumulatedScore(route.getAccumulatedScore() + Integer.parseInt(vote));
+        route.setUsersVoted(route.getUsersVoted() + 1);
+        routeUserVotedFor.setRoute(route);
+        routeUserVotedFor.setUser(user);
+        this.routesRepository.save(route);
+        this.userRouteVotesRepository.save(routeUserVotedFor);
+        return "ok";
+    }
 
 
 }
