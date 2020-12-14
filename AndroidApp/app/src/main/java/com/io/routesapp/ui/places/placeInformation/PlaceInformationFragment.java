@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RatingBar;
+import android.widget.ShareActionProvider;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +25,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.io.routesapp.R;
+import com.io.routesapp.SharedRoutesPlacesRepository;
 import com.io.routesapp.ui.places.model.PlaceReview;
 import com.io.routesapp.ui.places.model.PlaceReviewAdapter;
 import com.io.routesapp.ui.places.repository.PlaceReviewsRepository;
@@ -31,7 +33,6 @@ import com.io.routesapp.ui.places.repository.PlaceReviewsRepository;
 import java.util.ArrayList;
 
 public class PlaceInformationFragment extends Fragment {
-    private PlaceInformationViewModel placeInformationViewModel;
     RecyclerView mRecyclerView;
     PlaceReviewAdapter placeReviewAdapter;
     RecyclerView.LayoutManager layoutManager;
@@ -62,19 +63,17 @@ public class PlaceInformationFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initReviewsList();
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        placeInformationViewModel =
-                ViewModelProviders.of(this).get(PlaceInformationViewModel.class);
+        //PlaceInformationViewModel placeInformationViewModel = ViewModelProviders.of(this).get(PlaceInformationViewModel.class);
         View root = inflater.inflate(R.layout.fragment_place_information, container, false);
 
         mRecyclerView = (RecyclerView) root.findViewById(R.id.review_list);
         layoutManager = new LinearLayoutManager(getActivity());
 
-        placeReviewAdapter = new PlaceReviewAdapter(reviewsList);
+        placeReviewAdapter = new PlaceReviewAdapter(SharedRoutesPlacesRepository.placeReviews);
         mRecyclerView.setAdapter(placeReviewAdapter);
 
         addFAB = root.findViewById(R.id.add_fab);
@@ -115,7 +114,7 @@ public class PlaceInformationFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                reviewsList.add(new PlaceReview(0, 0, reviewText.getText().toString()));
+                SharedRoutesPlacesRepository.placeReviews.add(new PlaceReview(0, 0, reviewText.getText().toString()));
                 reviewField.setVisibility(View.GONE);
             }
         });

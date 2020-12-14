@@ -66,7 +66,7 @@ public class DiscoverPlacesFragment extends Fragment {
     }
 
     private void getPlacesFromSharedRepo() {
-        placesList =  new SharedRoutesPlacesRepository().getPlacesAvailable();
+        placesList =  SharedRoutesPlacesRepository.placesAvailable;
     }
 
 }

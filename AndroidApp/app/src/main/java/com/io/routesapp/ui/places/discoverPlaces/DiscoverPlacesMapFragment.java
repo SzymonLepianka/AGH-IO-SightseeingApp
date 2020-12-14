@@ -29,7 +29,7 @@ public class DiscoverPlacesMapFragment extends Fragment {
         super.onCreate(savedInstanceState);
         placesCoordinates = new ArrayList<>();
         placesNames = new ArrayList<>();
-        for (Place place : new SharedRoutesPlacesRepository().getPlacesAvailable()){
+        for (Place place : SharedRoutesPlacesRepository.placesAvailable){
             placesCoordinates.add(new LatLng(place.getLatitude(), place.getLongtitude()));
             placesNames.add(place.getName());
         }

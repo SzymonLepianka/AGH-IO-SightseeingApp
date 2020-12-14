@@ -22,7 +22,6 @@ import java.util.ArrayList;
 
 public class DiscoverRoutesFragment extends Fragment {
 
-    private DiscoverRoutesViewModel discoverRoutesViewModel;
     RecyclerView mRecyclerView;
     RouteAdapter routeAdapter;
     RecyclerView.LayoutManager layoutManager;
@@ -31,18 +30,15 @@ public class DiscoverRoutesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.getRoutesFromSharedRepo();
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        discoverRoutesViewModel =
-                ViewModelProviders.of(this).get(DiscoverRoutesViewModel.class);
         View root = inflater.inflate(R.layout.fragment_discover_routes, container, false);
         mRecyclerView = (RecyclerView) root.findViewById(R.id.routes_list);
         layoutManager = new LinearLayoutManager(getActivity());
 
-        routeAdapter = new RouteAdapter(routesList);
+        routeAdapter = new RouteAdapter(SharedRoutesPlacesRepository.routesAvailable);
         mRecyclerView.setAdapter(routeAdapter);
 
         return root;
@@ -54,6 +50,6 @@ public class DiscoverRoutesFragment extends Fragment {
     }
 
     private void getRoutesFromSharedRepo() {
-        routesList = new SharedRoutesPlacesRepository().getRoutesAvailable();
+        routesList = SharedRoutesPlacesRepository.routesAvailable;
     }
 }

@@ -87,8 +87,7 @@ public class RouteInformationFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_route_information, container, false);
 
-        route = new SharedRoutesPlacesRepository().getRoutesAvailable().get(0);
-        initReviewsList();
+        route = SharedRoutesPlacesRepository.routesAvailable.get(0);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_route);
         mapFragment.getMapAsync(callback);
 
@@ -96,7 +95,7 @@ public class RouteInformationFragment extends Fragment {
         mRecyclerView = (RecyclerView) root.findViewById(R.id.review_list);
         layoutManager = new LinearLayoutManager(getActivity());
 
-        routeReviewAdapter = new RouteReviewAdapter(reviewsList);
+        routeReviewAdapter = new RouteReviewAdapter(SharedRoutesPlacesRepository.routeReviews);
         mRecyclerView.setAdapter(routeReviewAdapter);
 
         addFAB = root.findViewById(R.id.add_fab);
@@ -137,7 +136,7 @@ public class RouteInformationFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                reviewsList.add(new RouteReview(0, 0, reviewText.getText().toString()));
+                SharedRoutesPlacesRepository.routeReviews.add(new RouteReview(0, 0, reviewText.getText().toString()));
                 reviewField.setVisibility(View.GONE);
             }
         });
