@@ -12,6 +12,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.io.routesapp.R;
+import com.io.routesapp.SharedRoutesPlacesRepository;
 import com.io.routesapp.ui.places.model.Place;
 
 import java.util.ArrayList;
@@ -40,6 +41,22 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
                 @Override
                 public void onClick(View v) {
                     Navigation.findNavController(v).navigate(R.id.nav_route_information);
+                }
+            });
+            cardView.setOnLongClickListener( new View.OnLongClickListener() {
+
+                @Override
+                public boolean onLongClick(View v) {
+                    Route route = new Route(routeNameView.getText().toString());
+                    if (!SharedRoutesPlacesRepository.getFavouriteRoutesNames().contains(route.name)) {
+                        SharedRoutesPlacesRepository.favouriteRoutes.add(route);
+                    }
+                    else{
+                        int index = SharedRoutesPlacesRepository.getFavouriteRoutesNames().indexOf(route.name);
+                        SharedRoutesPlacesRepository.favouriteRoutes.remove(SharedRoutesPlacesRepository.favouriteRoutes.get(index));
+                    }
+                    Navigation.findNavController(v).navigate(R.id.nav_my_fav_routes);
+                    return true;
                 }
             });
         }

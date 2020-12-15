@@ -18,14 +18,45 @@ public class Route {
     ArrayList<Place> placesOfRoute;
 
 
-    public String getName() {
-        return name;
-    }
-
     public Route(int id) {
         placesOfRoute = new ArrayList<>();
         this.id = id;
         name = "Route " + Integer.toString(id);
+    }
+
+    //TODO remove this later
+    public Route(String name){
+        id = 12452;
+        this.name = name;
+        placesOfRoute = new ArrayList<>();
+        placesOfRoute.add(new Place(
+                0,
+                "Wawel",
+                true,50.054316,19.9350402,
+                0,
+                0,
+                0,
+                "Wawel Castle"));
+        placesOfRoute.add(new Place(
+                1,
+                "Sukiennice",
+                true,50.0613741,19.9361222,
+                0,
+                0,
+                0,
+                "The Cloth Hall"));
+        placesOfRoute.add(new Place(
+                2,
+                "Barbakan Krakowski",
+                true,50.065569, 19.941689,
+                0,
+                0,
+                0,
+                "Kraków Barbican"));
+    }
+
+    public String getName() {
+        return name;
     }
 
     public int getId() {

@@ -83,6 +83,14 @@ public class SharedRoutesPlacesRepository {
         }
         return names;
     }
+
+    public static ArrayList<String> getFavouriteRoutesNames(){
+        ArrayList<String> names = new ArrayList<>();
+        for (Route route: favouriteRoutes){
+            names.add(route.getName());
+        }
+        return names;
+    }
     public ArrayList<Place> getPlacesAvailable() {
         return placesAvailable;
     }
