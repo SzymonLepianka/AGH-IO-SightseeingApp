@@ -50,15 +50,21 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
 
                 @Override
                 public boolean onLongClick(View v) {
-                    SharedRoutesPlacesRepository.favouritePlaces.add(
-                            new Place(0,
-                                    placeNameView.getText().toString(),
-                                    true,50.0613741,19.9361222,
-                                    0,
-                                    0,
-                                    0,
-                                    placeDescriptionView.getText().toString())
-                    );
+                    Place place = new Place(0,
+                            placeNameView.getText().toString(),
+                            true,50.0613741,19.9361222,
+                            0,
+                            0,
+                            0,
+                            placeDescriptionView.getText().toString());
+                    if (!SharedRoutesPlacesRepository.getFavouritePlacesNames().contains(place.name)) {
+                        SharedRoutesPlacesRepository.favouritePlaces.add(place);
+                    }
+                    else{
+                        int index = SharedRoutesPlacesRepository.getFavouritePlacesNames().indexOf(place.name);
+                        SharedRoutesPlacesRepository.favouritePlaces.remove(SharedRoutesPlacesRepository.favouritePlaces.get(index));
+                    }
+                    Navigation.findNavController(v).navigate(R.id.nav_my_fav_places);
                     return true;
                 }
             });
