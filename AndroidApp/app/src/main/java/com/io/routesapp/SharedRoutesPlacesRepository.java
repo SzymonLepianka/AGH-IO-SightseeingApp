@@ -1,5 +1,7 @@
 package com.io.routesapp;
 
+import android.text.style.UpdateLayout;
+
 import com.io.routesapp.ui.places.model.Place;
 import com.io.routesapp.ui.places.model.PlaceReview;
 import com.io.routesapp.ui.routes.model.Route;
@@ -12,6 +14,8 @@ public class SharedRoutesPlacesRepository {
     public static ArrayList<Route> routesAvailable;
     public static ArrayList<PlaceReview> placeReviews;
     public static ArrayList<RouteReview> routeReviews;
+    public static ArrayList<Place> favouritePlaces;
+    public static ArrayList<Route> favouriteRoutes;
 
     public SharedRoutesPlacesRepository() {
         this.init();
@@ -67,6 +71,9 @@ public class SharedRoutesPlacesRepository {
                     0, 0, "I loved this route, although it was a bit too short!"
             ));
         }
+
+        favouritePlaces = new ArrayList<>();
+        favouriteRoutes = new ArrayList<>();
     }
 
     public ArrayList<Place> getPlacesAvailable() {

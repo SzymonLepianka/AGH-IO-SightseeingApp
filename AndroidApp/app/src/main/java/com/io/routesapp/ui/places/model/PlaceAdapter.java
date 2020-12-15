@@ -1,6 +1,8 @@
 package com.io.routesapp.ui.places.model;
 
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,6 +14,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.io.routesapp.R;
+import com.io.routesapp.SharedRoutesPlacesRepository;
 
 import java.util.ArrayList;
 
@@ -37,9 +40,28 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
                 public void onClick(View v) {
                     Navigation.findNavController(v).navigate(R.id.nav_place_information);
                 }
+
             });
+
             placeNameView = (TextView) view.findViewById(R.id.place_name);
             placeDescriptionView = (TextView) view.findViewById(R.id.place_description);
+
+            cardView.setOnLongClickListener( new View.OnLongClickListener() {
+
+                @Override
+                public boolean onLongClick(View v) {
+                    SharedRoutesPlacesRepository.favouritePlaces.add(
+                            new Place(0,
+                                    placeNameView.getText().toString(),
+                                    true,50.0613741,19.9361222,
+                                    0,
+                                    0,
+                                    0,
+                                    placeDescriptionView.getText().toString())
+                    );
+                    return true;
+                }
+            });
         }
 
         public TextView getPlaceNameView() {
