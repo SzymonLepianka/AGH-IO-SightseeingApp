@@ -43,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         final TextInputEditText usernameEditText = findViewById(R.id.email_input);
         final TextInputEditText passwordEditText = findViewById(R.id.password_input);
         final Button loginButton = findViewById(R.id.login);
+        loginButton.setEnabled(false);
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
             @Override
@@ -94,6 +95,7 @@ public class LoginActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString());
+                loginButton.setEnabled(true);
             }
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
