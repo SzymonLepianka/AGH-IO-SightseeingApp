@@ -48,15 +48,15 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/place_card_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="50dp"
-        android:layout_marginVertical="150dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@color/white"
         android:theme="@style/Theme.MaterialComponents.Light"
         app:cardCornerRadius="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -68,8 +68,9 @@
 
             <ImageView
                 android:id="@+id/user_image"
-                android:layout_width="150dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="60dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -84,6 +85,7 @@
                 android:text="@string/user_name"
                 android:textColor="@android:color/secondary_text_light"
                 android:textSize="24sp"
+                app:layout_constraintTop_toBottomOf="@+id/user_image"
                 app:layout_constraintBottom_toTopOf="@id/surname"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -92,12 +94,12 @@
                 android:id="@+id/surname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
-                android:padding="3dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/user_surname"
                 android:textAllCaps="true"
                 android:textColor="@android:color/tertiary_text_dark"
                 android:textSize="18sp"
+                app:layout_constraintTop_toBottomOf="@id/name"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

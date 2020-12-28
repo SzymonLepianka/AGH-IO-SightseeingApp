@@ -53,7 +53,7 @@ public class FavouritePlacesFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.action_nav_discover_places_to_discover_places_map);
+                Navigation.findNavController(v).navigate(R.id.action_nav_my_fav_places_to_nav_fav_places_map);
             }
         });
         return root;

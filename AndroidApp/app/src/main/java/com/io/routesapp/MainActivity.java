@@ -1,11 +1,8 @@
 package com.io.routesapp;
 
 import android.os.Bundle;
-import android.view.View;
 import android.view.Menu;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.navigation.NavController;
@@ -26,11 +23,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
         //initializing a shared repository
-
         SharedRoutesPlacesRepository sharedRepo = new SharedRoutesPlacesRepository();
 
         // Passing each menu ID as a set of Ids because each
@@ -38,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_my_profile,
                 R.id.nav_discover_places, R.id.nav_discover_routes,
                 R.id.nav_my_fav_places, R.id.nav_my_fav_routes, R.id.nav_help)
-                .setDrawerLayout(drawer)
+                .setDrawerLayout(mDrawerLayout)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);

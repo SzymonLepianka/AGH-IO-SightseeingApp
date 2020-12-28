@@ -32,8 +32,6 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
 
         public ViewHolder(View view) {
             super(view);
-            // Define click listener for the ViewHolder's View
-
             routeNameView = (TextView) view.findViewById(R.id.route_name);
             routeDescriptionView = (TextView) view.findViewById(R.id.route_description);
             cardView = (CardView) view.findViewById(R.id.route_card_view);
@@ -71,12 +69,6 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
 
     }
 
-    /**
-     * Initialize the dataset of the Adapter.
-     *
-     * @param dataSet  containing the data to populate views to be used
-     * by RecyclerView.
-     */
     public RouteAdapter(ArrayList<Route> dataSet) {
         localDataSet = dataSet;
     }
