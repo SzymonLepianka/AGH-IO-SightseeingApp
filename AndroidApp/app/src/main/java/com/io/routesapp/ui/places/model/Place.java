@@ -3,7 +3,7 @@ package com.io.routesapp.ui.places.model;
 public class Place {
     int id;
     String name;
-    Boolean validPlace;
+    Boolean valid;
     Double latitude;
     Double longtitude;
     int googleMapsId;
@@ -17,7 +17,7 @@ public class Place {
     {
         this.id = id;
         this.name = name;
-        this.validPlace = validPlace;
+        this.valid = validPlace;
         this.latitude = latitude;
         this.longtitude = longtitude;
         this.googleMapsId = googleMapsId;
@@ -35,7 +35,7 @@ public class Place {
     }
 
     public Boolean getValidPlace() {
-        return validPlace;
+        return valid;
     }
 
     public Double getLatitude() {
