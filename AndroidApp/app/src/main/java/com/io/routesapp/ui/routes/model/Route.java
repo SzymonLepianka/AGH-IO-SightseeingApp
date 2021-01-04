@@ -21,7 +21,14 @@ public class Route {
     public Route(int id) {
         placesOfRoute = new ArrayList<>();
         this.id = id;
-        name = "Route " + Integer.toString(id);
+        name = "Route " + id;
+    }
+
+    public Route(int id, int accumulatedScore){
+        placesOfRoute = new ArrayList<>();
+        this.id = id;
+        name = "Route " + id;
+        this.accumulatedScore = accumulatedScore;
     }
 
     //TODO remove this later
@@ -85,8 +92,10 @@ public class Route {
 
     private ArrayList<String> getPlacesNames(){
         ArrayList<String> placesNames = new ArrayList<>();
-        for (Place place : placesOfRoute){
-            placesNames.add(place.getName());
+        if (!placesOfRoute.isEmpty()){
+            for (Place place : placesOfRoute){
+                placesNames.add(place.getName());
+            }
         }
         return placesNames;
     }

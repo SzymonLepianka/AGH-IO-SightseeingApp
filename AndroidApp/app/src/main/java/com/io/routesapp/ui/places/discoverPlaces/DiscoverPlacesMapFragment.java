@@ -15,13 +15,17 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.io.routesapp.MainActivity;
 import com.io.routesapp.R;
 import com.io.routesapp.SharedRoutesPlacesRepository;
 import com.io.routesapp.ui.places.model.Place;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 
 public class DiscoverPlacesMapFragment extends Fragment {
+    ArrayList<Place> placesList;
     ArrayList<LatLng> placesCoordinates;
     ArrayList<String> placesNames;
     @Override
@@ -29,10 +33,6 @@ public class DiscoverPlacesMapFragment extends Fragment {
         super.onCreate(savedInstanceState);
         placesCoordinates = new ArrayList<>();
         placesNames = new ArrayList<>();
-        for (Place place : SharedRoutesPlacesRepository.placesAvailable){
-            placesCoordinates.add(new LatLng(place.getLatitude(), place.getLongtitude()));
-            placesNames.add(place.getName());
-        }
     }
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
@@ -61,6 +61,13 @@ public class DiscoverPlacesMapFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        try {
+            placesList = MainActivity.HTTPClient.getPlaces();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        getPlacesNamesAndCoordinates(placesList,
+                placesNames, placesCoordinates);
         return inflater.inflate(R.layout.fragment_discover_places_map, container, false);
     }
 
@@ -71,6 +78,13 @@ public class DiscoverPlacesMapFragment extends Fragment {
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
+        }
+    }
+
+    private void getPlacesNamesAndCoordinates(ArrayList<Place> placesList, ArrayList<String> placesNames, ArrayList<LatLng> placesCoordinates){
+        for (Place place : placesList){
+            placesCoordinates.add(new LatLng(place.getLatitude(), place.getLongitude()));
+            placesNames.add(place.getName());
         }
     }
 }

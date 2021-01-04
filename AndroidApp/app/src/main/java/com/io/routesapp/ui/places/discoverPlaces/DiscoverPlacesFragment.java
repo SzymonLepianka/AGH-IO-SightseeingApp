@@ -36,7 +36,6 @@ public class DiscoverPlacesFragment extends Fragment {
     PlaceAdapter placeAdapter;
     RecyclerView.LayoutManager layoutManager;
     ArrayList<Place> placesList = new ArrayList<>();
-    JSONObject JSONplacesList;
     FloatingActionButton fab;
 
     @Override
@@ -80,23 +79,7 @@ public class DiscoverPlacesFragment extends Fragment {
     }
 
     private void getPlacesFromDataSource() throws IOException, JSONException, InterruptedException {
-        JSONplacesList = MainActivity.HTTPClient.getPlacesJSON();
-        JSONArray idArray = JSONplacesList.names();
-        for (int i = 0; i < idArray.length(); i++){
-            String id = (String) idArray.get(i);
-            JSONObject placeInfo = JSONplacesList.getJSONObject(String.valueOf(id));
-            Boolean valid = placeInfo.getBoolean("valid");
-            Double latitude = placeInfo.getDouble("latitude");
-            Double longitude = placeInfo.getDouble("longitude");
-            String name = placeInfo.getString("name");
-            //String description = placeInfo.getString("description");
-            int accumulatedScore = placeInfo.getInt("accumulatedScore");
-            int usersVoted = placeInfo.getInt("usersVoted");
-            Place newPlaceFromJSON = new Place(Integer.parseInt(id), name, valid,
-                    latitude, longitude, 0,
-                    accumulatedScore, usersVoted, "");
-            placesList.add(newPlaceFromJSON);
-        }
+        placesList = MainActivity.HTTPClient.getPlaces();
     }
 
 }

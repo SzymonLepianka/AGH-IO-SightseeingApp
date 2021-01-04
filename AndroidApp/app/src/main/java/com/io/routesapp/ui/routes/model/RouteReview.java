@@ -5,8 +5,8 @@ import com.io.routesapp.ui.reviews.Review;
 public class RouteReview extends Review {
     int routeID;
 
-    public RouteReview(int placeID, int authorID, String content) {
-        this.routeID = placeID;
+    public RouteReview(int routeID, int authorID, String content) {
+        this.routeID = routeID;
         this.setAuthorID(authorID);
         this.setContent(content);
     }

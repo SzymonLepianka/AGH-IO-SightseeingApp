@@ -64,11 +64,11 @@ public class RouteInformationFragment extends Fragment {
             for (int i = 1; i < placesInRoute.size(); i++) {
                 place1 = new MarkerOptions().position(
                         new LatLng(placesInRoute.get(i - 1).getLatitude(),
-                                placesInRoute.get(i - 1).getLongtitude())).title(
+                                placesInRoute.get(i - 1).getLongitude())).title(
                         placesInRoute.get(i - 1).getName());
                 place2 = new MarkerOptions().position(
                         new LatLng(placesInRoute.get(i).getLatitude(),
-                                placesInRoute.get(i).getLongtitude())).title(
+                                placesInRoute.get(i).getLongitude())).title(
                         placesInRoute.get(i).getName());
 
                 map.addMarker(place1);

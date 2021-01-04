@@ -5,21 +5,21 @@ public class Place {
     String name;
     Boolean valid;
     Double latitude;
-    Double longtitude;
+    Double longitude;
     int googleMapsId;
     int accumulatedScore;
     int usersVoted;
     String description;
 
     public Place(int id, String name, Boolean validPlace,
-                 Double latitude, Double longtitude, int googleMapsId,
+                 Double latitude, Double longitude, int googleMapsId,
                  int accumulatedScore, int usersVoted, String description)
     {
         this.id = id;
         this.name = name;
         this.valid = validPlace;
         this.latitude = latitude;
-        this.longtitude = longtitude;
+        this.longitude = longitude;
         this.googleMapsId = googleMapsId;
         this.accumulatedScore = accumulatedScore;
         this.usersVoted = usersVoted;
@@ -42,8 +42,8 @@ public class Place {
         return latitude;
     }
 
-    public Double getLongtitude() {
-        return longtitude;
+    public Double getLongitude() {
+        return longitude;
     }
 
     public int getGoogleMapsId() {

@@ -43,7 +43,7 @@ public class FavouritePlacesMapFragment extends Fragment {
             placesCoordinates = new ArrayList<>();
             placesNames = new ArrayList<>();
             for (Place place : SharedRoutesPlacesRepository.favouritePlaces){
-                placesCoordinates.add(new LatLng(place.getLatitude(), place.getLongtitude()));
+                placesCoordinates.add(new LatLng(place.getLatitude(), place.getLongitude()));
                 placesNames.add(place.getName());
             }
         }
