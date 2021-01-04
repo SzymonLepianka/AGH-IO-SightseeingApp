@@ -3,6 +3,7 @@ package com.io.routesapp.data.model;
 import android.content.Context;
 import android.util.Log;
 
+import com.io.routesapp.R;
 import com.io.routesapp.ui.places.model.Place;
 import com.io.routesapp.ui.places.model.PlaceReview;
 import com.io.routesapp.ui.reviews.Review;
@@ -28,14 +29,16 @@ public class httpClient {
     private static JSONObject placesListJSON;
     private Context context;
     private OkHttpClient client;
+    private String baseURL;
 
     public httpClient(Context context) {
         this.context = context;
         client = new OkHttpClient();
+        baseURL = context.getResources().getString(R.string.baseUrl);
     }
 
     public ArrayList<Place> getPlaces() throws JSONException, InterruptedException {
-        String url = "http://10.0.2.2:8080/places"; //10.0.2.2 - localhost
+        String url = baseURL + "/places"; //10.0.2.2 - localhost
 
         Request request = new Request.Builder()
                 .url(url)

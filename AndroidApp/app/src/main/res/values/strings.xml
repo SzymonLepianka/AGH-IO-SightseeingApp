@@ -31,4 +31,6 @@
 
     <string name="rate">Rate: </string>
     <string name="leave_your_comment">Share your opinion here</string>
+
+    <string name="baseUrl">http://10.0.2.2:8080/</string>
 </resources>
