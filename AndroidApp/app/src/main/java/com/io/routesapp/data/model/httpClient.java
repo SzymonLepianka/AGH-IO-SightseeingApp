@@ -27,6 +27,10 @@ import okhttp3.Request;
 
 public class httpClient {
     private static JSONObject placesListJSON;
+    private static JSONObject placeJSON;
+    private static JSONObject placeCommentListJSON;
+    private static JSONObject routesListJSON;
+    private static JSONObject routeCommentListJSON;
     private Context context;
     private OkHttpClient client;
     private String baseURL;
@@ -88,29 +92,106 @@ public class httpClient {
         return placesList;
     }
 
-    public Place getPlace(int id){
+    public Place getPlace(int id) throws JSONException, InterruptedException{
 
-        //TODO send request to server to get place details, parse place information
+        // send request to server to get place details, parse place information
         // and return new place object
 
-        return new Place(
-                0,
-                "Wawel",
-                true,50.054316,19.9350402,
-                0,
-                0,
-                0,
-                "Wawel Castle");
+        //tam chyba był inny URL wymagany path=places/{id}
+        String url = baseURL + "/places/" + id; //10.0.2.2 - localhost
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.d("OKHTTP3", e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) throws IOException {
+                if (!response.isSuccessful()){
+                    Log.d("OKHTTP3", String.valueOf(response.code()));
+                    return;
+                }
+                try {
+                    placeJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        while (placeJSON == null) {
+            Thread.sleep(10);
+        }
+
+        JSONObject placeInfo = placeJSON.getJSONObject(String.valueOf(id));
+        Boolean valid = placeInfo.getBoolean("valid");
+        Double latitude = placeInfo.getDouble("latitude");
+        Double longitude = placeInfo.getDouble("longitude");
+        String name = placeInfo.getString("name");
+        String description = placeInfo.getString("description");
+        int accumulatedScore = placeInfo.getInt("accumulatedScore");
+        int usersVoted = placeInfo.getInt("usersVoted");
+        Place place = new Place(id, name, valid,
+                latitude, longitude, 0,
+                accumulatedScore, usersVoted, description);
+
+        return place;
     }
 
-    public ArrayList<PlaceReview> getPlaceReviews(int id){
+    public ArrayList<PlaceReview> getPlaceReviews(int id) throws JSONException, InterruptedException{
 
-        //TODO the same for reviews
+        //the same for reviews
         // review constructor: PlaceReview(int placeID, int authorID, String content)
 
-        return  new ArrayList<>();
+        //taki URL mamy w Server/Controllers/PlacesController getPlaceComment
+        String url = baseURL + "/places/" + id + "/comments"; //10.0.2.2 - localhost
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.d("OKHTTP3", e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) throws IOException {
+                if (!response.isSuccessful()){
+                    Log.d("OKHTTP3", String.valueOf(response.code()));
+                    return;
+                }
+                try {
+                    placeCommentListJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        while (placeCommentListJSON == null) {
+            Thread.sleep(10);
+        }
+
+        //dla każdego comment zwraca JSON z CommentID, UserID, Content
+        ArrayList<PlaceReview> placeReviewList = new ArrayList<>();
+        JSONArray idArray = placeCommentListJSON.names();
+        for (int i = 0; i < idArray.length(); i++){
+            JSONObject placeInfo = placeCommentListJSON.getJSONObject(String.valueOf(id));
+            int authorID = placeInfo.getInt("username");
+            String content = placeInfo.getString("content");
+            PlaceReview newPlaceReviewFromJSON = new PlaceReview(id, authorID, content);
+            placeReviewList.add(newPlaceReviewFromJSON);
+        }
+
+        return  placeReviewList;
     }
 
+    //TODO nie było mapowania dla ulubonych w Server \Gosia
     public ArrayList<Place> getFavouritePlaces(int userID){
 
         //TODO get list of favourite places IDs for the user
@@ -119,25 +200,104 @@ public class httpClient {
         return new ArrayList<>();
     }
 
-    public ArrayList<Route> getRoutes(){
-        //TODO get all public routes
+    public ArrayList<Route> getRoutes() throws JSONException, InterruptedException {
+        //get all public routes
         // route constructor: Route(int id, int accumulated score)
         // return list of routes
+        String url = baseURL + "/routes"; //10.0.2.2 - localhost
 
-        return new ArrayList<>();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.d("OKHTTP3", e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) throws IOException {
+                if (!response.isSuccessful()){
+                    Log.d("OKHTTP3", String.valueOf(response.code()));
+                    return;
+                }
+                try {
+                    routesListJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        while (routesListJSON== null) {
+            Thread.sleep(10);
+        }
+
+        ArrayList<Route> routesList = new ArrayList<>();
+        JSONArray idArray = routesListJSON.names();
+        for (int i = 0; i < idArray.length(); i++){
+            String id = (String) idArray.get(i);
+            JSONObject placeInfo = routesListJSON.getJSONObject(String.valueOf(id));
+            int score = placeInfo.getInt("accumulatedScore");
+            Route newRouteFromJSON = new Route(Integer.parseInt(id), score);
+            routesList.add(newRouteFromJSON);
+        }
+        return routesList;
     }
 
-    public ArrayList<Place> getPointsOfRoute(int id){
+    public ArrayList<Place> getPointsOfRoute(int id)  throws JSONException, InterruptedException{
         //TODO get points of route
         return new ArrayList<>();
     }
 
-    public ArrayList<RouteReview> getRouteReviews(int id){
-        //TODO get reviews for route
+    public ArrayList<RouteReview> getRouteReviews(int id)  throws JSONException, InterruptedException{
+        // get reviews for route
         // constructor: RouteReview(int routeID, int authorID, String content)
-        return new ArrayList<>();
+        String url = baseURL + "/routes/" + id + "/comments"; //10.0.2.2 - localhost
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.d("OKHTTP3", e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) throws IOException {
+                if (!response.isSuccessful()){
+                    Log.d("OKHTTP3", String.valueOf(response.code()));
+                    return;
+                }
+                try {
+                    routeCommentListJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        while (routeCommentListJSON == null) {
+            Thread.sleep(10);
+        }
+
+        //dla każdego route zwraca JSON z RouteID, UserID, Content
+        //TODO sprawdziłabym w AGH-IO-SightseeingApp/Server/src/main/java/Server/Controllers/RoutesController.java  buildJsonRouteCommen tam przy Mapping
+        //  wrzuca routeID i potem routeID jeszcze raz (JSON in JSON ? ) (chyba ja to robiłam, więc my bad) /Gosia
+        ArrayList<RouteReview> routeReviewList = new ArrayList<>();
+        JSONArray idArray = routeCommentListJSON.names();
+        for (int i = 0; i < idArray.length(); i++){
+            JSONObject placeInfo = routeCommentListJSON.getJSONObject(String.valueOf(id));
+            int authorID = placeInfo.getInt("userId");
+            String content = placeInfo.getString("content");
+            RouteReview newRouteReviewFromJSON = new RouteReview(id, authorID, content);
+            routeReviewList.add(newRouteReviewFromJSON);
+        }
+        return  routeReviewList;
     }
 
+    //TODO same here, nie było ulubionych \Gosia
     public ArrayList<Route> getFavouriteRoutes(int userID){
         //TODO get favourite routes list for this user
         return  new ArrayList<>();
