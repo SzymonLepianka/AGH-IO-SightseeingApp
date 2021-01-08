@@ -92,7 +92,7 @@ public class httpClient {
         return placesList;
     }
 
-    public Place getPlace(int id) throws JSONException, InterruptedException{
+    public Place getPlace(int id) throws JSONException, InterruptedException {
 
         // send request to server to get place details, parse place information
         // and return new place object
@@ -201,7 +201,7 @@ public class httpClient {
     }
 
     public ArrayList<Route> getRoutes() throws JSONException, InterruptedException {
-        //get all public routes
+        //TODO get all public routes
         // route constructor: Route(int id, int accumulated score)
         // return list of routes
         String url = baseURL + "/routes"; //10.0.2.2 - localhost

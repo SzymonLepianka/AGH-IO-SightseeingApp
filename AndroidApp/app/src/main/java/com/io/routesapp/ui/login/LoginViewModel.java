@@ -6,10 +6,15 @@ import androidx.lifecycle.ViewModel;
 
 import android.util.Patterns;
 
+import com.io.routesapp.StartActivity;
 import com.io.routesapp.data.LoginRepository;
 import com.io.routesapp.data.Result;
 import com.io.routesapp.data.model.LoggedInUser;
 import com.io.routesapp.R;
+
+import okhttp3.FormBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class LoginViewModel extends ViewModel {
 
@@ -32,6 +37,19 @@ public class LoginViewModel extends ViewModel {
     public void login(String username, String password) {
         // can be launched in a separate asynchronous job
         Result<LoggedInUser> result = loginRepository.login(username, password);
+
+        /*
+        RequestBody formBody = new FormBody.Builder()
+                .add("clientID", .getResources().getString(R.string.clientID))
+                .add("username", username)
+                .add("password", password)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/users")
+                .post(formBody)
+                .build();
+*/
 
         if (result instanceof Result.Success) {
             LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
