@@ -19,6 +19,9 @@ import androidx.navigation.Navigation;
 import com.io.routesapp.MainActivity;
 import com.io.routesapp.R;
 import com.io.routesapp.StartActivity;
+import com.io.routesapp.data.LoginDataSource;
+import com.io.routesapp.data.LoginRepository;
+import com.io.routesapp.data.model.LoggedInUser;
 
 public class ProfileFragment extends Fragment {
 
