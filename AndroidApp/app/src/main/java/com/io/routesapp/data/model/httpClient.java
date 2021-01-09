@@ -34,6 +34,7 @@ public class httpClient {
     private Context context;
     private OkHttpClient client;
     private String baseURL;
+    private String accessToken;
 
     public httpClient(Context context) {
         this.context = context;
@@ -46,7 +47,9 @@ public class httpClient {
 
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("Set-Cookie", "AccessToken=" + accessToken) //jeszcze nie wiem gdzie będzie przechowywany
                 .build();
+
 
         client.newCall(request).enqueue(new Callback() {
             @Override

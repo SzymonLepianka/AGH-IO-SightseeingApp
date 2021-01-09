@@ -41,6 +41,10 @@ public class Result<T> {
             this.error = error;
         }
 
+        public Error() {
+
+        }
+
         public Exception getError() {
             return this.error;
         }
