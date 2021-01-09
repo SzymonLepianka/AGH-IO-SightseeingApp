@@ -21,6 +21,7 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	compile 'org.json:json:20201115'
+	implementation('io.jsonwebtoken:jjwt:0.2')
 }
 
 test {

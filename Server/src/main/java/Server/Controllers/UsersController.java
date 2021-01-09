@@ -1,16 +1,23 @@
 package Server.Controllers;
 
 import Server.Domain.*;
+import Server.Model.Authorization;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,15 +54,19 @@ public class UsersController {
         return userJson;
     }
 
-    @GetMapping(path="/{id}")
-    public @ResponseBody String getUser(@PathVariable String id){
-        var dbResponse = this.usersRepository.findById(Long.parseLong(id));
+    @GetMapping(path="/{username}")
+    public @ResponseBody String getUser(@PathVariable String username, HttpServletResponse httpServletResponse) throws SQLException {
+        //TODO
+        Authorization.Authorize(httpServletResponse);
+        //TODO dostać userID na bazie username, narazie hardcoded
+        var dbResponse = this.usersRepository.findById(1L);
         if(dbResponse.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found in data base");
         }
         var user = dbResponse.get();
         var response = new JSONObject();
         response.put(user.getId().toString(), this.buildJsonUser(user));
+
         return response.toString();
     }
 
