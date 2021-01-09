@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.riversun.okhttp3.OkHttp3CookieHelper;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,16 +39,21 @@ public class httpClient {
 
     public httpClient(Context context) {
         this.context = context;
-        client = new OkHttpClient();
         baseURL = context.getResources().getString(R.string.baseUrl);
     }
 
     public ArrayList<Place> getPlaces() throws JSONException, InterruptedException {
         String url = baseURL + "/places"; //10.0.2.2 - localhost
 
+        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
+        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .cookieJar(cookieHelper.cookieJar())
+                .build();
+
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Set-Cookie", "AccessToken=" + accessToken) //jeszcze nie wiem gdzie będzie przechowywany
                 .build();
 
 
@@ -103,6 +109,13 @@ public class httpClient {
         //tam chyba był inny URL wymagany path=places/{id}
         String url = baseURL + "/places/" + id; //10.0.2.2 - localhost
 
+        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
+        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .cookieJar(cookieHelper.cookieJar())
+                .build();
+
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -152,6 +165,13 @@ public class httpClient {
 
         //taki URL mamy w Server/Controllers/PlacesController getPlaceComment
         String url = baseURL + "/places/" + id + "/comments"; //10.0.2.2 - localhost
+
+        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
+        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .cookieJar(cookieHelper.cookieJar())
+                .build();
 
         Request request = new Request.Builder()
                 .url(url)
@@ -209,6 +229,13 @@ public class httpClient {
         // return list of routes
         String url = baseURL + "/routes"; //10.0.2.2 - localhost
 
+        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
+        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .cookieJar(cookieHelper.cookieJar())
+                .build();
+
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -257,6 +284,13 @@ public class httpClient {
         // get reviews for route
         // constructor: RouteReview(int routeID, int authorID, String content)
         String url = baseURL + "/routes/" + id + "/comments"; //10.0.2.2 - localhost
+
+        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
+        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .cookieJar(cookieHelper.cookieJar())
+                .build();
 
         Request request = new Request.Builder()
                 .url(url)
