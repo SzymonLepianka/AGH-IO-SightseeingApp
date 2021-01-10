@@ -2,7 +2,15 @@ package Server.Controllers;
 
 import Server.Domain.*;
 import Server.Model.Authorization;
+import Server.Model.ParameterStringBuilder;
+import com.sun.istack.NotNull;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.riversun.okhttp3.OkHttp3CookieHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -10,17 +18,24 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 @Controller
 @RequestMapping(path="/users")
@@ -46,27 +61,72 @@ public class UsersController {
     private JSONObject buildJsonUser(User user) {
         var userJson = new JSONObject();
         userJson
+                .put("user_id", user.getId())
                 .put("username",user.getUsername())
                 .put("firstname", user.getFirstName())
                 .put("surname", user.getSurname())
-                .put("email", user.getEmail())
-                .put("birthdate", user.getBirthDate());
+                .put("email", user.getEmail());
         return userJson;
     }
 
     @GetMapping(path="/{username}")
-    public @ResponseBody String getUser(@PathVariable String username, HttpServletResponse httpServletResponse) throws SQLException {
-        //TODO
-        Authorization.Authorize(httpServletResponse);
-        //TODO dostać userID na bazie username, narazie hardcoded
-        var dbResponse = this.usersRepository.findById(1L);
-        if(dbResponse.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found in data base");
-        }
-        var user = dbResponse.get();
-        var response = new JSONObject();
-        response.put(user.getId().toString(), this.buildJsonUser(user));
+    public @ResponseBody String getUser(@PathVariable String username, HttpServletResponse httpServletResponse) throws SQLException, IOException {
+        String accessToken = Authorization.Authorize(httpServletResponse);
+        List<User> allUsersFromDataBase = (List<User>) this.usersRepository.findAll();
+        User userFound = allUsersFromDataBase.stream()
+                .filter(x -> username.equals(x.getUsername()))
+                .findFirst()
+                .orElse(null);
+        User user;
+        if (userFound != null){
+            var dbResponse = this.usersRepository.findById(userFound.getId());
+            if(dbResponse.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found in data base");
+            }
+            user = dbResponse.get();
+        }else {
+            String url = "http://10.0.2.2:8081/api/getUserData?clientID=2&accesstoken="+accessToken; //10.0.2.2 - localhost
 
+            OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
+            cookieHelper.setCookie(url, "AccessToken" , accessToken);
+
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .cookieJar(cookieHelper.cookieJar())
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    throw new IllegalStateException("error in onFailure");
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) throws IOException {
+                    if (!response.isSuccessful()){
+                        throw new IllegalStateException("error in onResponse");
+                    }
+                    try {
+                        JSONObject jsonObject = new JSONObject(Objects.requireNonNull(response.body()).string());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+
+            throw new IllegalStateException("Implement me!");
+        }
+        var response = new JSONObject();
+        response.put("user_id", user.getId());
+        response.put("email", user.getEmail());
+        response.put("first_name", user.getFirstName());
+        response.put("surname", user.getSurname());
+        response.put("username", user.getUsername());
+//        response.put(user.getId().toString(), this.buildJsonUser(user).put("email", user.getEmail()));
         return response.toString();
     }
 

@@ -8,6 +8,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
@@ -15,7 +16,7 @@ import java.sql.SQLException;
 
 public class Authorization {
 
-    public static void Authorize(HttpServletResponse httpServletResponse) throws ResponseStatusException, SQLException {
+    public static String Authorize(HttpServletResponse httpServletResponse) throws ResponseStatusException, SQLException {
         String appSecret = "222222";
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -34,5 +35,6 @@ public class Authorization {
                  throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "thrown in Authorization, claims error");
             }
         }
+        return accessTokenCookie.getValue();
     }
 }
