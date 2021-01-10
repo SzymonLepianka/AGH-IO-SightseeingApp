@@ -25,7 +25,6 @@ public class CheckAccessTokenThread implements Runnable {
                     e.printStackTrace();
                 }
             }
-
             refreshTokens();
         }
     }
@@ -42,7 +41,7 @@ public class CheckAccessTokenThread implements Runnable {
         if (split[2].startsWith("exp", 1)){
             long expiresAt = Long.parseLong(split[2].substring(6));
             System.out.println(expiresAt);
-            return  (System.currentTimeMillis() - expiresAt) < 600000 ; // 1000L - obecny czas (ilość sekund od 1970 roku)
+            return  (expiresAt - System.currentTimeMillis()) < 600000 ;
         }
 
         return false;
