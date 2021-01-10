@@ -38,6 +38,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'androidx.annotation:annotation:1.1.0'
 
+    implementation 'org.riversun:okhttp3-cookie-helper:1.0.0'
     implementation 'androidx.webkit:webkit:1.2.0'
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
