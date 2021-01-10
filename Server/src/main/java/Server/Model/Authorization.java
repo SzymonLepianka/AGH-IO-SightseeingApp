@@ -8,31 +8,37 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.WebUtils;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
-import java.sql.SQLException;
+import java.time.Instant;
+import java.util.Date;
 
 public class Authorization {
 
-    public static String Authorize(HttpServletResponse httpServletResponse) throws ResponseStatusException, SQLException {
+    public String Authorize(String username, HttpServletResponse httpServletResponse) throws ResponseStatusException {
         String appSecret = "222222";
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var accessTokenCookie = WebUtils.getCookie(request, "AccessToken");
-        if(accessTokenCookie == null) {
+        if (accessTokenCookie == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessTokenCookie is null");
-        }
-        else {
+        } else {
             var accessToken = accessTokenCookie.getValue();
+            Claims claims;
             try {
-                Claims claims = Jwts.parser()
+                claims = Jwts.parser()
                         .setSigningKey(DatatypeConverter.parseBase64Binary(appSecret))
                         .parseClaimsJws(accessToken).getBody();
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "thrown in Authorization, accessToken is invalid");
             }
-            catch(Exception e) {
-                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "thrown in Authorization, claims error");
+            String username1 = (String) claims.get("username");
+            if (!username1.equals(username)) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "username does not match");
+            }
+            if (claims.getExpiration().before(Date.from(Instant.now()))) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessToken is expired");
             }
         }
         return accessTokenCookie.getValue();
