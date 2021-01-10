@@ -1,9 +1,13 @@
 package com.io.routesapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.io.routesapp.data.model.LoggedInUser;
 import com.io.routesapp.data.model.httpClient;
 
 import androidx.navigation.NavController;
@@ -17,12 +21,18 @@ import androidx.appcompat.widget.Toolbar;
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-
+    private static LoggedInUser loggedInUser;
     public static httpClient HTTPClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        loggedInUser = new LoggedInUser(intent.getStringExtra("username"),
+                intent.getStringExtra("displayName"),
+                intent.getStringExtra("email"));
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -43,6 +53,12 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView name = (TextView) headerView.findViewById(R.id.drawer_name);
+        name.setText(loggedInUser.getDisplayName());
+        TextView email = (TextView) headerView.findViewById((R.id.drawer_email));
+        email.setText(loggedInUser.getEmail());
     }
 
     @Override
@@ -57,5 +73,9 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    public static LoggedInUser getLoggedInUser() {
+        return loggedInUser;
     }
 }

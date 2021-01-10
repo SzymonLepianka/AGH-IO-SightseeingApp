@@ -56,25 +56,12 @@
             android:layout_marginHorizontal="48dp"
             android:includeFontPadding="true"
             android:padding="20dp"
-            android:text="Log in with email"
+            android:text="@string/action_sign_in_oauth2"
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             android:theme="@style/AppTheme.Button"
             />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/login_oauth_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="48dp"
-            android:includeFontPadding="true"
-            android:padding="20dp"
-            android:text="Log in with OAuth2"
-            android:textAllCaps="true"
-            android:textColor="@color/colorPrimary"
-            android:textStyle="bold"
-            android:theme="@style/AppTheme.Button" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/create_account"
@@ -83,7 +70,7 @@
             android:layout_marginHorizontal="48dp"
             android:includeFontPadding="true"
             android:padding="20dp"
-            android:text="create an account"
+            android:text="@string/action_create_acount"
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"

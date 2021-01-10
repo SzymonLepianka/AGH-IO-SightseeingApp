@@ -78,7 +78,7 @@
                 app:srcCompat="@drawable/ic_profile" />
 
             <TextView
-                android:id="@+id/name"
+                android:id="@+id/displayName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed-medium"
@@ -86,20 +86,6 @@
                 android:textColor="@android:color/secondary_text_light"
                 android:textSize="24sp"
                 app:layout_constraintTop_toBottomOf="@+id/user_image"
-                app:layout_constraintBottom_toTopOf="@id/surname"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/surname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="@string/user_surname"
-                android:textAllCaps="true"
-                android:textColor="@android:color/tertiary_text_dark"
-                android:textSize="18sp"
-                app:layout_constraintTop_toBottomOf="@id/name"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

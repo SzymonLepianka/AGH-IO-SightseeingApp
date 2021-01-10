@@ -25,19 +25,21 @@ import com.io.routesapp.data.model.LoggedInUser;
 
 public class ProfileFragment extends Fragment {
 
-    private ProfileViewModel profileViewModel;
+    private LoggedInUser loggedInUser;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loggedInUser = MainActivity.getLoggedInUser();
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        profileViewModel =
-                ViewModelProviders.of(this).get(ProfileViewModel.class);
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
-        final TextView textView = root.findViewById(R.id.username);
+        final TextView username = root.findViewById(R.id.username);
+        final TextView displayName = root.findViewById(R.id.displayName);
+        username.setText(loggedInUser.getUserId());
+        displayName.setText(loggedInUser.getDisplayName());
         Button logout_button = root.findViewById(R.id.log_out);
         logout_button.setOnClickListener(new View.OnClickListener() {
             @Override
