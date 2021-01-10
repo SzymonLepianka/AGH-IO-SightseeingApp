@@ -75,7 +75,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 setResult(Activity.RESULT_OK);
 
-                //Complete and destroy login activity once successful
                 finish();
             }
         });
@@ -125,6 +124,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("username", model.getUsername());
         intent.putExtra("displayName", model.getDisplayName());
+        intent.putExtra("email", model.getEmail());
         startActivity(intent);
     }
 

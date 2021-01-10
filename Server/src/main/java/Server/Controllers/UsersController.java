@@ -116,8 +116,6 @@ public class UsersController {
                     }
                 }
             });
-
-
             throw new IllegalStateException("Implement me!");
         }
         var response = new JSONObject();

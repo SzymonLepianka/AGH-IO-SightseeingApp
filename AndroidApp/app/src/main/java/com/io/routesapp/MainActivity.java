@@ -3,6 +3,8 @@ package com.io.routesapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.io.routesapp.data.model.LoggedInUser;
@@ -28,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         loggedInUser = new LoggedInUser(intent.getStringExtra("username"),
-                intent.getStringExtra("displayName"));
+                intent.getStringExtra("displayName"),
+                intent.getStringExtra("email"));
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -50,6 +53,12 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView name = (TextView) headerView.findViewById(R.id.drawer_name);
+        name.setText(loggedInUser.getDisplayName());
+        TextView email = (TextView) headerView.findViewById((R.id.drawer_email));
+        email.setText(loggedInUser.getEmail());
     }
 
     @Override

@@ -48,7 +48,7 @@ public class LoginDataSource {
                 getAccessTokenAndRefreshToken();
                 LoggedInUser user = getUserData(username);
 
-                    return new Result.Success<>(user);
+                return new Result.Success<>(user);
             } catch (Exception e) {
                 return new Result.Error(new IOException("Error logging in", e));
             }
@@ -151,12 +151,11 @@ public class LoginDataSource {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    Log.d("OKHTTP", String.valueOf(response.message()));
-                    //throw new IOException(String.valueOf(response.code()));
+                    throw new IOException(String.valueOf(response.code()));
                 } else {
                     try {
-                        responseCopy = response;
                         userJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                        Log.d("OKHTTP RESPONSE", userJSON.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -168,10 +167,10 @@ public class LoginDataSource {
             Thread.sleep(10);
         }
 
-        Log.d("NAMES", String.valueOf(userJSON.names().get(0)));
-        String userID = userJSON.getJSONObject((String) userJSON.names().get(0)).getString("username");
-        String displayName = userJSON.getJSONObject((String) userJSON.names().get(0)).getString("firstname") +
-                " " + userJSON.getJSONObject((String) userJSON.names().get(0)).getString("surname");
-        return new LoggedInUser(userID, displayName);
+        String userID = userJSON.getString("username");
+        String displayName = userJSON.getString("first_name") +
+                " " + userJSON.getString("surname");
+        String email = userJSON.getString("email");
+        return new LoggedInUser(userID, displayName, email);
     }
 }
