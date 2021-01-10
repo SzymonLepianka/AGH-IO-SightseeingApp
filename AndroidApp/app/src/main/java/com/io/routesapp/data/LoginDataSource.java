@@ -1,49 +1,35 @@
 package com.io.routesapp.data;
 
-import android.app.Application;
 import android.util.Log;
 
-import com.io.routesapp.R;
 import com.io.routesapp.data.model.LoggedInUser;
-
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.riversun.okhttp3.OkHttp3CookieHelper;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.Cookie;
-import okhttp3.CookieJar;
 import okhttp3.FormBody;
-import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
-/**
- * Class that handles authentication w/ login credentials and retrieves user information.
- */
+
 public class LoginDataSource {
-    Response responseCopy;
-    private String IOBaseURL = "http://10.0.2.2:8080/";
     private JSONObject userJSON;
-    String userID;
-    String displayName;
+    String IObaseUrl = "http://10.0.2.2:8080/";
+    String DPLoginUrl = "http://10.0.2.2:8081/web/login";
+    String DPExchangeUrl = "http://10.0.2.2:8081/api/createToken?clientID=2&authCode=";
     HashMap<String, String> cookies = new HashMap<>();
 
     public Result<LoggedInUser> login(String username, String password) {
 
         try {
-                // TODO: handle loggedInUser authentication
                 getAuthCode(username, password);
                 getAccessTokenAndRefreshToken();
                 LoggedInUser user = getUserData(username);
@@ -67,10 +53,9 @@ public class LoginDataSource {
                 .add("password", password)
                 .build();
 
-        Log.d("OKHTTP POST BODY", body.toString());
 
         Request request = new Request.Builder()
-                .url("http://10.0.2.2:8081/web/login")
+                .url(DPLoginUrl)
                 .post(body)
                 .build();
 
@@ -83,7 +68,7 @@ public class LoginDataSource {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    Log.d("OKHTTP", response.message());
+                    throw new IOException("Error in response from DP Server :( error code: " + response.code());
                 } else {
                     String cookie = (response.headers().get("Set-Cookie").split(";")[0]);
                     cookies.put(cookie.split("=")[0], cookie.split("=")[1]);
@@ -99,7 +84,7 @@ public class LoginDataSource {
     private void getAccessTokenAndRefreshToken() throws InterruptedException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("http://10.0.2.2:8081/api/createToken?clientID=2&authCode=" + cookies.get("AuthCode"))
+                .url(DPExchangeUrl + cookies.get("AuthCode"))
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -111,8 +96,7 @@ public class LoginDataSource {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    Log.d("OKHTTP", response.message());
-                    throw new IOException(String.valueOf(response.code()));
+                    throw new IOException("Error in response from DP Server :( error code: " + String.valueOf(response.code()));
                 } else {
                     String cookie = (response.headers().values("Set-Cookie").get(0).split(";")[0]);
                     cookies.put(cookie.split("=")[0], cookie.split("=")[1]);
@@ -129,7 +113,7 @@ public class LoginDataSource {
 
     private LoggedInUser getUserData(String username) throws InterruptedException, JSONException, IOException {
 
-        String url = IOBaseURL + "users/" + username;
+        String url = IObaseUrl + "users/" + username;
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
         cookieHelper.setCookie(url, "AccessToken" , cookies.get("AccessToken"));
@@ -171,6 +155,6 @@ public class LoginDataSource {
         String displayName = userJSON.getString("first_name") +
                 " " + userJSON.getString("surname");
         String email = userJSON.getString("email");
-        return new LoggedInUser(userID, displayName, email);
+        return new LoggedInUser(userID, displayName, email, cookies);
     }
 }

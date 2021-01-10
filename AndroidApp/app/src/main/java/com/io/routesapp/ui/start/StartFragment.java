@@ -25,7 +25,6 @@ public class StartFragment extends Fragment {
         View root = inflater.inflate(R.layout.activity_start, container, false);
         Button login = root.findViewById(R.id.login_button);
         Button create_account = root.findViewById(R.id.create_account);
-        final WebView login_oauth_webview = root.findViewById(R.id.login_oauth_webview);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override

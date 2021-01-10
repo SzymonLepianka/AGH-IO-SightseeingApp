@@ -125,10 +125,13 @@ public class LoginActivity extends AppCompatActivity {
         intent.putExtra("username", model.getUsername());
         intent.putExtra("displayName", model.getDisplayName());
         intent.putExtra("email", model.getEmail());
+        intent.putExtra("AccessToken", model.getCookies().get("AccessToken"));
+        intent.putExtra("RefreshToken", model.getCookies().get("RefreshToken"));
         startActivity(intent);
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
+
 }

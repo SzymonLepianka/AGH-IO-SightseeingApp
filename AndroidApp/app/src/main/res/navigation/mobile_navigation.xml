@@ -36,7 +36,13 @@
                 app:destination="@id/nav_discover_places_map" />
             <action
                 android:id="@+id/action_nav_discover_places_to_nav_place_information"
-                app:destination="@id/nav_place_information" />
+                app:destination="@id/nav_place_information" >
+                <argument
+                        android:name="place_id"
+                        app:argType="integer"
+                        android:defaultValue="1"
+                />
+            </action>
         </fragment>
         <fragment
             android:id="@+id/nav_discover_routes"

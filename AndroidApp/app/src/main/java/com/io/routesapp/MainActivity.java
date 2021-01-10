@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.io.routesapp.data.model.LoggedInUser;
-import com.io.routesapp.data.model.httpClient;
+import com.io.routesapp.data.httpClient;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -17,6 +17,8 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,7 +33,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         loggedInUser = new LoggedInUser(intent.getStringExtra("username"),
                 intent.getStringExtra("displayName"),
-                intent.getStringExtra("email"));
+                intent.getStringExtra("email"), new HashMap<String, String>());
+
+        loggedInUser.setCookie("AccessToken", intent.getStringExtra("AccessToken"));
+        loggedInUser.setCookie("RefreshToken", intent.getStringExtra("RefreshToken"));
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -59,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         name.setText(loggedInUser.getDisplayName());
         TextView email = (TextView) headerView.findViewById((R.id.drawer_email));
         email.setText(loggedInUser.getEmail());
+
+        CheckAccessTokenThread thread = new CheckAccessTokenThread();
+        thread.run();
     }
 
     @Override

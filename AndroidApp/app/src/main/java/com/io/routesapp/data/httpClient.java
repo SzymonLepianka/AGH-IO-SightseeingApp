@@ -1,8 +1,9 @@
-package com.io.routesapp.data.model;
+package com.io.routesapp.data;
 
 import android.content.Context;
 import android.util.Log;
 
+import com.io.routesapp.MainActivity;
 import com.io.routesapp.R;
 import com.io.routesapp.ui.places.model.Place;
 import com.io.routesapp.ui.places.model.PlaceReview;
@@ -40,17 +41,12 @@ public class httpClient {
     public httpClient(Context context) {
         this.context = context;
         baseURL = context.getResources().getString(R.string.baseUrl);
+        accessToken = MainActivity.getLoggedInUser().getCookies().get("AccessToken");
     }
 
     public ArrayList<Place> getPlaces() throws JSONException, InterruptedException {
         String url = baseURL + "/places"; //10.0.2.2 - localhost
 
-        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken" , accessToken);
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .cookieJar(cookieHelper.cookieJar())
-                .build();
 
         Request request = new Request.Builder()
                 .url(url)

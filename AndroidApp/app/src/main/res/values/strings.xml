@@ -23,7 +23,7 @@
     <string name="prompt_password">OAuth2 service password</string>
     <string name="action_create_acount">Create an account</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="action_sign_in_oauth2">Sing in with oauth2</string>
+    <string name="action_sign_in_oauth2">Sign in with oauth2</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
@@ -33,4 +33,7 @@
     <string name="leave_your_comment">Share your opinion here</string>
 
     <string name="baseUrl">http://10.0.2.2:8080/</string>
+
+    <string name="dp_login_url">http://10.0.2.2:8081/web/login</string>
+    <string name="dp_exchange_url">http://10.0.2.2:8081/api/createToken?clientID=2&amp;authCode=</string>
 </resources>
