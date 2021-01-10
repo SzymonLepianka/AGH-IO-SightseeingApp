@@ -26,10 +26,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
@@ -70,14 +70,14 @@ public class UsersController {
     }
 
     @GetMapping(path="/{username}")
-    public @ResponseBody String getUser(@PathVariable String username, HttpServletResponse httpServletResponse) throws SQLException, IOException {
+    public @ResponseBody String getUser(@PathVariable String username, HttpServletResponse httpServletResponse) throws SQLException, IOException, InterruptedException, ParseException {
         String accessToken = Authorization.Authorize(httpServletResponse);
         List<User> allUsersFromDataBase = (List<User>) this.usersRepository.findAll();
         User userFound = allUsersFromDataBase.stream()
                 .filter(x -> username.equals(x.getUsername()))
                 .findFirst()
                 .orElse(null);
-        User user;
+        User user = null;
         if (userFound != null){
             var dbResponse = this.usersRepository.findById(userFound.getId());
             if(dbResponse.isEmpty()) {
@@ -85,41 +85,58 @@ public class UsersController {
             }
             user = dbResponse.get();
         }else {
-            String url = "http://10.0.2.2:8081/api/getUserData?clientID=2&accesstoken="+accessToken; //10.0.2.2 - localhost
+            String url = "http://localhost:8081/api/getUserData?clientID=2&accessToken="+accessToken; //10.0.2.2 - localhost
 
             OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
             cookieHelper.setCookie(url, "AccessToken" , accessToken);
 
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .cookieJar(cookieHelper.cookieJar())
-                    .build();
+            HttpClient client = HttpClient.newBuilder().cookieHandler(new CookieManager()).build();
 
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
 
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    throw new IllegalStateException("error in onFailure");
-                }
+            CookieStore cookieStore = ((CookieManager) (client.cookieHandler().get())).getCookieStore();
+            cookieStore.add(URI.create(url), new HttpCookie("AccessToken" , accessToken));
 
-                @Override
-                public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) throws IOException {
-                    if (!response.isSuccessful()){
-                        throw new IllegalStateException("error in onResponse");
-                    }
-                    try {
-                        JSONObject jsonObject = new JSONObject(Objects.requireNonNull(response.body()).string());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+            JSONObject jsonObject1 = new JSONObject(response.body());
 
-            throw new IllegalStateException("Implement me!");
+//            JSONObject jsonObject1 = null;
+//            client.newCall(request).enqueue(new Callback() {
+//                @Override
+//                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+//                    throw new IllegalStateException("error in onFailure");
+//                }
+//
+//                @Override
+//                public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) throws IOException {
+//                    if (!response.isSuccessful()){
+//                        throw new IllegalStateException("error in onResponse");
+//                    }
+//                    try {
+//                        jsonObject1 = new JSONObject(Objects.requireNonNull(response.body()).string());
+//                        System.out.println(jsonObject1);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+            String user_email = (String) jsonObject1.get("user_email");
+            String user_phonenumber = (String) jsonObject1.get("user_phonenumber");
+            String user_firstname = (String) jsonObject1.get("user_firstname");
+            String user_username = (String) jsonObject1.get("user_username");
+            String user_surname = (String) jsonObject1.get("user_surname");
+            Date user_birthdate = new SimpleDateFormat("yyyy-MM-dd").parse(jsonObject1.get("user_birthdate").toString());
+
+            user = new User();
+            user.setEmail(user_email);
+            user.setFirstName(user_firstname);
+            user.setUsername(user_username);
+            user.setSurname(user_surname);
+            user.setBirthDate(user_birthdate);
+            usersRepository.save(user);
         }
+
         var response = new JSONObject();
         response.put("user_id", user.getId());
         response.put("email", user.getEmail());
