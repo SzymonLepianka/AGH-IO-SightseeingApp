@@ -8,6 +8,8 @@
     <string name="log_out">Log out</string>
     <string name="delete_account">Delete profile</string>
 
+    <string name="settings">settings</string>
+
     <string name="menu_my_profile">My profile</string>
     <string name="menu_discover_places">Discover places</string>
     <string name="menu_discover_routes">Discover routes</string>

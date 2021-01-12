@@ -1,7 +1,10 @@
 package com.io.routesapp.data;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.io.routesapp.MainActivity;
 import com.io.routesapp.data.model.LoggedInUser;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +44,7 @@ public class LoginDataSource {
     }
 
     public void logout() {
-        // TODO: revoke authentication
+        MainActivity.getLoggedInUser().getCookies().clear();
     }
 
     private void getAuthCode(String username, String password) throws InterruptedException {

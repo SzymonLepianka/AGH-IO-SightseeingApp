@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.io.routesapp.MainActivity;
 import com.io.routesapp.R;
+import com.io.routesapp.data.model.LoggedInUser;
 import com.io.routesapp.ui.places.model.Place;
 import com.io.routesapp.ui.places.model.PlaceReview;
 import com.io.routesapp.ui.reviews.Review;
@@ -20,12 +21,14 @@ import org.riversun.okhttp3.OkHttp3CookieHelper;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 
 public class httpClient {
     private static JSONObject placesListJSON;
@@ -33,20 +36,29 @@ public class httpClient {
     private static JSONObject placeCommentListJSON;
     private static JSONObject routesListJSON;
     private static JSONObject routeCommentListJSON;
+    private static JSONObject userJSON;
     private Context context;
     private OkHttpClient client;
     private String baseURL;
     private String accessToken;
 
-    public httpClient(Context context) {
+    public httpClient(Context context, String activityName) {
         this.context = context;
         baseURL = context.getResources().getString(R.string.baseUrl);
-        accessToken = MainActivity.getLoggedInUser().getCookies().get("AccessToken");
+        if (activityName.equals("MainActivity")) {
+            accessToken = MainActivity.getLoggedInUser().getCookies().get("AccessToken");
+        }
     }
 
     public ArrayList<Place> getPlaces() throws JSONException, InterruptedException {
         String url = baseURL + "/places"; //10.0.2.2 - localhost
 
+        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
+        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .cookieJar(cookieHelper.cookieJar())
+                .build();
 
         Request request = new Request.Builder()
                 .url(url)
@@ -334,5 +346,86 @@ public class httpClient {
     public ArrayList<Route> getFavouriteRoutes(int userID){
         //TODO get favourite routes list for this user
         return  new ArrayList<>();
+    }
+
+    public LoggedInUser getUserData(String username) throws InterruptedException, JSONException {
+        String url = baseURL + "users/" + username;
+
+        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
+        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .cookieJar(cookieHelper.cookieJar())
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException(String.valueOf(response.code()));
+                } else {
+                    try {
+                        userJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                        Log.d("OKHTTP RESPONSE", userJSON.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        while (userJSON == null) {
+            Thread.sleep(10);
+        }
+
+        String userID = userJSON.getString("username");
+        String displayName = userJSON.getString("first_name") +
+                " " + userJSON.getString("surname");
+        String email = userJSON.getString("email");
+        return new LoggedInUser(userID, displayName, email, MainActivity.getLoggedInUser().getCookies());
+    }
+
+    public boolean isTokenValid(String accessToken) throws InterruptedException {
+        String url = "http://10.0.2.2:8081/api/validateToken?clientID=2&accessToken=" + accessToken;
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        final String[] responseMessage = {null};
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException(String.valueOf(response.code()));
+                } else {
+                    responseMessage[0] = response.body().string();
+                }
+            }
+        });
+
+        while (responseMessage[0] == null){
+            Thread.sleep(10);
+        }
+
+        return responseMessage[0].equals("Access Token is valid");
     }
 }

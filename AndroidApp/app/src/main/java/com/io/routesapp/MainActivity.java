@@ -1,6 +1,8 @@
 package com.io.routesapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -18,25 +20,48 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import org.json.JSONException;
+
+import java.security.acl.AclEntry;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private static LoggedInUser loggedInUser;
     public static httpClient HTTPClient;
+    public static boolean logoutButtonPressed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        loggedInUser = new LoggedInUser(intent.getStringExtra("username"),
-                intent.getStringExtra("displayName"),
-                intent.getStringExtra("email"), new HashMap<String, String>());
+        logoutButtonPressed = false;
 
+        Intent intent = getIntent();
+
+        loggedInUser = new LoggedInUser("", "", "", new HashMap<String, String>());
         loggedInUser.setCookie("AccessToken", intent.getStringExtra("AccessToken"));
         loggedInUser.setCookie("RefreshToken", intent.getStringExtra("RefreshToken"));
+
+        HTTPClient = new httpClient(this.getApplicationContext(), "MainActivity");
+
+        if (Objects.requireNonNull(intent.getStringExtra("PreviousActivity")).equals("login")) {
+            loggedInUser.setUserId(intent.getStringExtra("username"));
+            loggedInUser.setDisplayName(intent.getStringExtra("displayName"));
+            loggedInUser.setEmail(intent.getStringExtra("email"));
+        }
+        else if (Objects.requireNonNull(intent.getStringExtra("PreviousActivity")).equals("start")) {
+            String username = intent.getStringExtra("username");
+            try {
+                loggedInUser = HTTPClient.getUserData(username);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -44,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
-        HTTPClient = new httpClient(this.getApplicationContext());
         //initializing a shared repository
         SharedRoutesPlacesRepository sharedRepo = new SharedRoutesPlacesRepository();
 
@@ -66,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         email.setText(loggedInUser.getEmail());
 
         CheckAccessTokenThread thread = new CheckAccessTokenThread();
-        thread.run();
+        thread.start();
     }
 
     @Override
@@ -81,6 +105,32 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (!logoutButtonPressed) {
+            SharedPreferences mySharedPreferences = getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = mySharedPreferences.edit();
+            editor.putString("AccessToken", loggedInUser.getCookies().get("AccessToken"));
+            editor.putString("RefreshToken", loggedInUser.getCookies().get("RefreshToken"));
+            editor.putString("username", loggedInUser.getUserId());
+            editor.apply();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (!logoutButtonPressed) {
+            SharedPreferences mySharedPreferences = getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = mySharedPreferences.edit();
+            editor.putString("AccessToken", loggedInUser.getCookies().get("AccessToken"));
+            editor.putString("RefreshToken", loggedInUser.getCookies().get("RefreshToken"));
+            editor.putString("username", loggedInUser.getUserId());
+            editor.apply();
+        }
     }
 
     public static LoggedInUser getLoggedInUser() {

@@ -1,6 +1,8 @@
 package com.io.routesapp.ui.profile;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,8 @@ import com.io.routesapp.data.LoginDataSource;
 import com.io.routesapp.data.LoginRepository;
 import com.io.routesapp.data.model.LoggedInUser;
 
+import java.util.Objects;
+
 public class ProfileFragment extends Fragment {
 
     private LoggedInUser loggedInUser;
@@ -44,6 +48,11 @@ public class ProfileFragment extends Fragment {
         logout_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences preferences = requireActivity().getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.clear();
+                editor.apply();
+                MainActivity.logoutButtonPressed = true;
                 Intent intent = new Intent(getContext(), StartActivity.class);
                 startActivity(intent);
             }

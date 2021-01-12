@@ -34,4 +34,20 @@ public class LoggedInUser {
     public void setCookie(String key, String value) {
         cookies.put(key, value);
     }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setCookies(HashMap<String, String> cookies) {
+        this.cookies = cookies;
+    }
 }

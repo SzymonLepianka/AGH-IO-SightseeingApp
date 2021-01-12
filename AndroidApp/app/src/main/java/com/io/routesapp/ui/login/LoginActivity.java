@@ -122,6 +122,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUiWithUser(LoggedInUserView model) {
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("PreviousActivity", "login");
         intent.putExtra("username", model.getUsername());
         intent.putExtra("displayName", model.getDisplayName());
         intent.putExtra("email", model.getEmail());

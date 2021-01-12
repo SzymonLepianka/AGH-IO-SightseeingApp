@@ -1,5 +1,8 @@
 package com.io.routesapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import org.apache.tomcat.util.codec.binary.Base64;
 
 import java.io.IOException;
@@ -10,7 +13,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class CheckAccessTokenThread implements Runnable {
+public class CheckAccessTokenThread extends Thread {
     String DPRefreshTokenUrl = "http://10.0.2.2:8081/api/refreshToken?clientID=1&refreshToken=";
 
     @Override
@@ -41,7 +44,8 @@ public class CheckAccessTokenThread implements Runnable {
         if (split[2].startsWith("exp", 1)){
             long expiresAt = Long.parseLong(split[2].substring(6));
             System.out.println(expiresAt);
-            return  (expiresAt - System.currentTimeMillis()) < 600000 ;
+            long currentTime = System.currentTimeMillis()/1000L;
+            return  (expiresAt - currentTime) < 600 ;
         }
 
         return false;
