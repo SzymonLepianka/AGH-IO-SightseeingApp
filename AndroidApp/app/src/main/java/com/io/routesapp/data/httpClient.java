@@ -114,7 +114,7 @@ public class httpClient {
         // send request to server to get place details, parse place information
         // and return new place object
 
-        //tam chyba był inny URL wymagany path=places/{id}
+        //URL wymagany path=places/{id}
         String url = baseURL + "/places/" + id; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
@@ -171,7 +171,7 @@ public class httpClient {
         //the same for reviews
         // review constructor: PlaceReview(int placeID, int authorID, String content)
 
-        //taki URL mamy w Server/Controllers/PlacesController getPlaceComment
+
         String url = baseURL + "/places/" + id + "/comments"; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
@@ -222,7 +222,7 @@ public class httpClient {
         return  placeReviewList;
     }
 
-    //TODO nie było mapowania dla ulubonych w Server \Gosia
+    //nie było mapowania dla ulubonych w Server \Gosia
     public ArrayList<Place> getFavouritePlaces(int userID){
 
         //TODO get list of favourite places IDs for the user
@@ -232,7 +232,6 @@ public class httpClient {
     }
 
     public ArrayList<Route> getRoutes() throws JSONException, InterruptedException {
-        //TODO get all public routes
         // route constructor: Route(int id, int accumulated score)
         // return list of routes
         String url = baseURL + "/routes"; //10.0.2.2 - localhost
@@ -327,9 +326,7 @@ public class httpClient {
             Thread.sleep(10);
         }
 
-        //dla każdego route zwraca JSON z RouteID, UserID, Content
-        //TODO sprawdziłabym w AGH-IO-SightseeingApp/Server/src/main/java/Server/Controllers/RoutesController.java  buildJsonRouteCommen tam przy Mapping
-        //  wrzuca routeID i potem routeID jeszcze raz (JSON in JSON ? ) (chyba ja to robiłam, więc my bad) /Gosia
+
         ArrayList<RouteReview> routeReviewList = new ArrayList<>();
         JSONArray idArray = routeCommentListJSON.names();
         for (int i = 0; i < idArray.length(); i++){
@@ -342,7 +339,7 @@ public class httpClient {
         return  routeReviewList;
     }
 
-    //TODO same here, nie było ulubionych \Gosia
+    //nie było ulubionych \Gosia
     public ArrayList<Route> getFavouriteRoutes(int userID){
         //TODO get favourite routes list for this user
         return  new ArrayList<>();

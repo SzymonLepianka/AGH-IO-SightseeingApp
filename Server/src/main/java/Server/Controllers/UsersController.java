@@ -44,7 +44,7 @@ public class UsersController {
     @Autowired
     private UserRouteVotesRepository userRouteVotesRepository;
 
-    //TODO Change return type from String to whatever type there should be. (All controllers)
+
 
     private JSONObject buildJsonUser(User user) {
         var userJson = new JSONObject();
