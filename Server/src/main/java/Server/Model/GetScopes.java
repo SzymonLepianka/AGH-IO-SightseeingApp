@@ -11,7 +11,6 @@ import java.util.List;
 public class GetScopes {
     public static List<String> getScopes(String accessToken) {
         String appSecret = "222222";
-        //TODO move appsecret to application properties
         Claims claims = Jwts.parser()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(appSecret))
                 .parseClaimsJws(accessToken).getBody();

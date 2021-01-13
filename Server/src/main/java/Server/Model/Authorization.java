@@ -16,7 +16,7 @@ import java.util.Date;
 
 public class Authorization {
 
-    public String Authorize(String username, HttpServletResponse httpServletResponse) throws ResponseStatusException {
+    public static String Authorize(String username, HttpServletResponse httpServletResponse) throws ResponseStatusException {
         String appSecret = "222222";
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
