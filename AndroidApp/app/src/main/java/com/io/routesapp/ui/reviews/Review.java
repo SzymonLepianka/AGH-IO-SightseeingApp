@@ -1,10 +1,10 @@
 package com.io.routesapp.ui.reviews;
 
 public abstract class Review {
-    Integer authorID;
+    String authorID;
     String content;
 
-    public Integer getAuthorID() {
+    public String getAuthorID() {
         return authorID;
     }
 
@@ -12,7 +12,7 @@ public abstract class Review {
         return content;
     }
 
-    public void setAuthorID(int authorID) {
+    public void setAuthorID(String authorID) {
         this.authorID = authorID;
     }
 

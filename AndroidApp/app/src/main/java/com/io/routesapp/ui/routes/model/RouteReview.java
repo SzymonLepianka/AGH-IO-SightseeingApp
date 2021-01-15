@@ -3,19 +3,19 @@ package com.io.routesapp.ui.routes.model;
 import com.io.routesapp.ui.reviews.Review;
 
 public class RouteReview extends Review {
-    int routeID;
+    String routeID;
 
-    public RouteReview(int routeID, int authorID, String content) {
+    public RouteReview(String routeID, String authorID, String content) {
         this.routeID = routeID;
         this.setAuthorID(authorID);
         this.setContent(content);
     }
 
-    public int getPlaceID() {
+    public String getPlaceID() {
         return routeID;
     }
 
-    public void setPlaceID(int routeID) {
+    public void setPlaceID(String routeID) {
         this.routeID = routeID;
     }
 

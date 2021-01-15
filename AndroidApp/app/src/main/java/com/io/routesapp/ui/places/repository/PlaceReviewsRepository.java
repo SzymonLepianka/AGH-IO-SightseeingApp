@@ -10,7 +10,7 @@ public class PlaceReviewsRepository {
     ArrayList<PlaceReview> init() {
         for (int i = 0; i < 5; i++) {
             reviewsList.add(new PlaceReview(
-                    0, 0, "Wonderful place!"
+                    "0", "", "Wonderful place!"
             ));
         }
         return reviewsList;

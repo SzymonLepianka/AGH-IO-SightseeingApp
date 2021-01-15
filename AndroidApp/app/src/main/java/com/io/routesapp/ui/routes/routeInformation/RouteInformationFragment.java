@@ -136,7 +136,7 @@ public class RouteInformationFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                SharedRoutesPlacesRepository.routeReviews.add(new RouteReview(0, 0, reviewText.getText().toString()));
+                SharedRoutesPlacesRepository.routeReviews.add(new RouteReview("0", "", reviewText.getText().toString()));
                 reviewField.setVisibility(View.GONE);
             }
         });

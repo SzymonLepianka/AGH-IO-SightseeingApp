@@ -81,6 +81,7 @@ public class PlaceReviewAdapter extends RecyclerView.Adapter<PlaceReviewAdapter.
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
+        if (localDataSet.isEmpty()){ return 0;}
         return localDataSet.size();
     }
 }

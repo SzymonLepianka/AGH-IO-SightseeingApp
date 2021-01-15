@@ -1,5 +1,6 @@
 package com.io.routesapp.ui.places.model;
 
+import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -30,6 +31,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         private final CardView cardView;
         private final TextView placeNameView;
         private final TextView placeDescriptionView;
+        private int placeID;
 
         public ViewHolder(View view) {
             super(view);
@@ -38,7 +40,9 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Navigation.findNavController(v).navigate(R.id.nav_place_information);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("id", placeID);
+                    Navigation.findNavController(v).navigate(R.id.nav_place_information, bundle);
                 }
 
             });
@@ -78,6 +82,8 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
             return placeDescriptionView;
         }
 
+        public void setPlaceID(int id){ placeID = id; };
+
     }
 
     /**
@@ -108,6 +114,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         // contents of the view with that element
         viewHolder.getPlaceNameView().setText(localDataSet.get(position).getName());
         viewHolder.getPlaceDescriptionView().setText(localDataSet.get(position).getDescription());
+        viewHolder.setPlaceID(localDataSet.get(position).getId());
     }
 
     // Return the size of your dataset (invoked by the layout manager)

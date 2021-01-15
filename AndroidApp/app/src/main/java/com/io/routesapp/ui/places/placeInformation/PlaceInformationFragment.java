@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.ShareActionProvider;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,13 +26,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.io.routesapp.MainActivity;
 import com.io.routesapp.R;
 import com.io.routesapp.SharedRoutesPlacesRepository;
+import com.io.routesapp.ui.places.model.Place;
 import com.io.routesapp.ui.places.model.PlaceReview;
 import com.io.routesapp.ui.places.model.PlaceReviewAdapter;
 import com.io.routesapp.ui.places.repository.PlaceReviewsRepository;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class PlaceInformationFragment extends Fragment {
     RecyclerView mRecyclerView;
@@ -39,41 +46,49 @@ public class PlaceInformationFragment extends Fragment {
     ArrayList<PlaceReview> reviewsList;
     FloatingActionButton addFAB;
     View reviewField;
+    TextView firstComment;
+    int id;
+    Place place;
 
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
-
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            LatLng wawel = new LatLng(50.054316,19.9350402);
-            googleMap.addMarker(new MarkerOptions().position(wawel).title("Wawel"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(wawel, 15));
+            LatLng coords = new LatLng(place.getLatitude(), place.getLongitude());
+            googleMap.addMarker(new MarkerOptions().position(coords).title(place.getName()));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coords, 15));
         }
     };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        id = requireArguments().getInt("id");
+        try {
+            place = MainActivity.HTTPClient.getPlace(id);
+            reviewsList = MainActivity.HTTPClient.getPlaceReviews(id);
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error while loading page...", Toast.LENGTH_SHORT).show();
+        }
+        
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        //PlaceInformationViewModel placeInformationViewModel = ViewModelProviders.of(this).get(PlaceInformationViewModel.class);
         View root = inflater.inflate(R.layout.fragment_place_information, container, false);
 
         mRecyclerView = (RecyclerView) root.findViewById(R.id.review_list);
         layoutManager = new LinearLayoutManager(getActivity());
 
-        placeReviewAdapter = new PlaceReviewAdapter(SharedRoutesPlacesRepository.placeReviews);
+        firstComment = root.findViewById(R.id.firstPlaceComment);
+        firstComment.setVisibility(View.INVISIBLE);
+
+        if (reviewsList.isEmpty()){
+            firstComment.setVisibility(View.VISIBLE);
+        }
+
+        placeReviewAdapter = new PlaceReviewAdapter(reviewsList);
         mRecyclerView.setAdapter(placeReviewAdapter);
 
         addFAB = root.findViewById(R.id.add_fab);
@@ -114,8 +129,10 @@ public class PlaceInformationFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                SharedRoutesPlacesRepository.placeReviews.add(new PlaceReview(0, 0, reviewText.getText().toString()));
+                SharedRoutesPlacesRepository.placeReviews.add(new PlaceReview("", "0", Objects.requireNonNull(reviewText.getText()).toString()));
                 reviewField.setVisibility(View.GONE);
+                firstComment.setVisibility(View.INVISIBLE);
+                sendFAB.setVisibility(View.VISIBLE);
             }
         });
 

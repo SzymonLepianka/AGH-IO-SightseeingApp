@@ -61,14 +61,14 @@ public class SharedRoutesPlacesRepository {
 
         placeReviews = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            placeReviews.add(new PlaceReview(0, 0, "Wonderful place!"
+            placeReviews.add(new PlaceReview("", "", "Wonderful place!"
             ));
         }
 
         routeReviews = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             routeReviews.add(new RouteReview(
-                    0, 0, "I loved this route, although it was a bit too short!"
+                    "0", "0", "I loved this route, although it was a bit too short!"
             ));
         }
 

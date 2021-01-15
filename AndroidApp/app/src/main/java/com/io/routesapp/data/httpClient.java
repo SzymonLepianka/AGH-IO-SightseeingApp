@@ -51,6 +51,8 @@ public class httpClient {
     }
 
     public ArrayList<Place> getPlaces() throws JSONException, InterruptedException {
+        placesListJSON = null;
+
         String url = baseURL + "/places"; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
@@ -110,6 +112,8 @@ public class httpClient {
     }
 
     public Place getPlace(int id) throws JSONException, InterruptedException {
+        //setting json to null so as to wait for the new response
+        placeJSON = null;
 
         // send request to server to get place details, parse place information
         // and return new place object
@@ -167,9 +171,9 @@ public class httpClient {
     }
 
     public ArrayList<PlaceReview> getPlaceReviews(int id) throws JSONException, InterruptedException{
-
         //the same for reviews
         // review constructor: PlaceReview(int placeID, int authorID, String content)
+        placeCommentListJSON = null;
 
         //taki URL mamy w Server/Controllers/PlacesController getPlaceComment
         String url = baseURL + "/places/" + id + "/comments"; //10.0.2.2 - localhost
@@ -211,14 +215,16 @@ public class httpClient {
         //dla każdego comment zwraca JSON z CommentID, UserID, Content
         ArrayList<PlaceReview> placeReviewList = new ArrayList<>();
         JSONArray idArray = placeCommentListJSON.names();
-        for (int i = 0; i < idArray.length(); i++){
-            JSONObject placeInfo = placeCommentListJSON.getJSONObject(String.valueOf(id));
-            int authorID = placeInfo.getInt("username");
-            String content = placeInfo.getString("content");
-            PlaceReview newPlaceReviewFromJSON = new PlaceReview(id, authorID, content);
-            placeReviewList.add(newPlaceReviewFromJSON);
+        if (idArray != null) {
+            for (int i = 0; i < idArray.length() ; i++){
+                String reviewId = String.valueOf(idArray.get(i));
+                JSONObject placeInfo = placeCommentListJSON.getJSONObject(reviewId);
+                String authorID = placeInfo.getString("username");
+                String content = placeInfo.getString("content");
+                PlaceReview newPlaceReviewFromJSON = new PlaceReview(reviewId, authorID, content);
+                placeReviewList.add(newPlaceReviewFromJSON);
+            }
         }
-
         return  placeReviewList;
     }
 
@@ -232,6 +238,7 @@ public class httpClient {
     }
 
     public ArrayList<Route> getRoutes() throws JSONException, InterruptedException {
+        routesListJSON = null;
         //TODO get all public routes
         // route constructor: Route(int id, int accumulated score)
         // return list of routes
@@ -291,6 +298,7 @@ public class httpClient {
     public ArrayList<RouteReview> getRouteReviews(int id)  throws JSONException, InterruptedException{
         // get reviews for route
         // constructor: RouteReview(int routeID, int authorID, String content)
+        routeCommentListJSON = null;
         String url = baseURL + "/routes/" + id + "/comments"; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
@@ -333,10 +341,11 @@ public class httpClient {
         ArrayList<RouteReview> routeReviewList = new ArrayList<>();
         JSONArray idArray = routeCommentListJSON.names();
         for (int i = 0; i < idArray.length(); i++){
-            JSONObject placeInfo = routeCommentListJSON.getJSONObject(String.valueOf(id));
-            int authorID = placeInfo.getInt("userId");
+            String reviewId = String.valueOf(idArray.get(i));
+            JSONObject placeInfo = routeCommentListJSON.getJSONObject(reviewId);
+            String authorID = placeInfo.getString("username");
             String content = placeInfo.getString("content");
-            RouteReview newRouteReviewFromJSON = new RouteReview(id, authorID, content);
+            RouteReview newRouteReviewFromJSON = new RouteReview(reviewId, authorID, content);
             routeReviewList.add(newRouteReviewFromJSON);
         }
         return  routeReviewList;

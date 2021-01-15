@@ -1,5 +1,6 @@
 package com.io.routesapp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,7 +28,7 @@ public class StartActivity extends AppCompatActivity {
 
         httpClient HTTPClient = new httpClient(this.getApplicationContext(), "StartActivity");
 
-        SharedPreferences mySharedPreferences = getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
+        @SuppressLint("WorldReadableFiles") SharedPreferences mySharedPreferences = getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
         cookies = new HashMap<>();
         if(mySharedPreferences.contains("AccessToken")) {
             cookies.put("AccessToken", mySharedPreferences.getString("AccessToken", ""));
