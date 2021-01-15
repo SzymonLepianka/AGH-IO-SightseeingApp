@@ -3,6 +3,7 @@ package Server.Controllers;
 import Server.Domain.*;
 import Server.Model.AddUser;
 import Server.Model.Authorization;
+import Server.Model.DataFromDB;
 import Server.Model.GetUserData;
 import Server.View.APIView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,17 +65,27 @@ public class UsersController {
 
     @DeleteMapping(path = "/{id}")
     public @ResponseBody
-    String deleteUser(@PathVariable String id) {
-        var user = getUserFromDB(id);
+    String deleteUser(@PathVariable String id, HttpServletResponse httpServletResponse) {
+
+        //autoryzacja
+        String username = DataFromDB.getUsernameById(id, usersRepository);
+        Authorization.Authorize(username, httpServletResponse);
+
+        var user = DataFromDB.getUserFromDB(id, usersRepository);
         this.usersRepository.delete(user);
         return "ok";
     }
 
     @GetMapping(path = "/{user_id}/placeVotes/{place_id}")
     public @ResponseBody
-    String didUserVoteForPlace(@PathVariable String user_id, @PathVariable String place_id) {
-        var user = getUserFromDB(user_id);
-        var place = getPlaceFromDB(place_id);
+    String didUserVoteForPlace(@PathVariable String user_id, @PathVariable String place_id, HttpServletResponse httpServletResponse) {
+
+        //autoryzacja
+        String username = DataFromDB.getUsernameById(user_id, usersRepository);
+        Authorization.Authorize(username, httpServletResponse);
+
+        var user = DataFromDB.getUserFromDB(user_id, usersRepository);
+        var place = DataFromDB.getPlaceFromDB(place_id, placesRepository);
 
         var result = false;
         for (var votePlace : user.getUserPlaceVotes()) {
@@ -88,10 +99,14 @@ public class UsersController {
 
     @PostMapping(path = "/{user_id}/placeVotes/{place_id}")
     public @ResponseBody
-    String userVoteForPlace(@PathVariable String user_id, @PathVariable String place_id, @RequestParam String vote) {
+    String userVoteForPlace(@PathVariable String user_id, @PathVariable String place_id, @RequestParam String vote, HttpServletResponse httpServletResponse) {
 
-        var user = getUserFromDB(user_id);
-        var place = getPlaceFromDB(place_id);
+        //autoryzacja
+        String username = DataFromDB.getUsernameById(user_id, usersRepository);
+        Authorization.Authorize(username, httpServletResponse);
+
+        var user = DataFromDB.getUserFromDB(user_id, usersRepository);
+        var place = DataFromDB.getPlaceFromDB(place_id, placesRepository);
 
         for (var votePlace : user.getUserPlaceVotes()) {
             if (votePlace.getPlace() == place) {
@@ -110,9 +125,14 @@ public class UsersController {
 
     @GetMapping(path = "/{user_id}/routeVotes/{route_id}")
     public @ResponseBody
-    String didUserVoteForRoute(@PathVariable String user_id, @PathVariable String route_id) {
-        var user = getUserFromDB(user_id);
-        var route = getRouteFromDB(route_id);
+    String didUserVoteForRoute(@PathVariable String user_id, @PathVariable String route_id, HttpServletResponse httpServletResponse) {
+
+        //autoryzacja
+        String username = DataFromDB.getUsernameById(user_id, usersRepository);
+        Authorization.Authorize(username, httpServletResponse);
+
+        var user = DataFromDB.getUserFromDB(user_id, usersRepository);
+        var route = DataFromDB.getRouteFromDB(route_id, routesRepository);
 
         var result = false;
         for (var voteRoute : user.getUserRouteVotes()) {
@@ -126,10 +146,14 @@ public class UsersController {
 
     @PostMapping(path = "/{user_id}/routeVotes/{route_id}")
     public @ResponseBody
-    String userVoteForRoute(@PathVariable String user_id, @PathVariable String route_id, @RequestParam String vote) {
+    String userVoteForRoute(@PathVariable String user_id, @PathVariable String route_id, @RequestParam String vote, HttpServletResponse httpServletResponse) {
 
-        var user = getUserFromDB(user_id);
-        var route = getRouteFromDB(route_id);
+        //autoryzacja
+        String username = DataFromDB.getUsernameById(user_id, usersRepository);
+        Authorization.Authorize(username, httpServletResponse);
+
+        var user = DataFromDB.getUserFromDB(user_id, usersRepository);
+        var route = DataFromDB.getRouteFromDB(route_id, routesRepository);
 
         for (var voteRoute : user.getUserRouteVotes()) {
             if (voteRoute.getRoute() == route) {
@@ -144,29 +168,5 @@ public class UsersController {
         this.routesRepository.save(route);
         this.userRouteVotesRepository.save(routeUserVotedFor);
         return "ok";
-    }
-
-    private User getUserFromDB(String user_id){
-        var dbResponseUser = this.usersRepository.findById(Long.parseLong(user_id));
-        if (dbResponseUser.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-        return dbResponseUser.get();
-    }
-
-    private Route getRouteFromDB(String route_id){
-        var dbResponseRoute = this.routesRepository.findById(Long.parseLong(route_id));
-        if (dbResponseRoute.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found");
-        }
-        return dbResponseRoute.get();
-    }
-
-    private Place getPlaceFromDB(String place_id){
-        var dbResponsePlace = this.placesRepository.findById(Long.parseLong(place_id));
-        if (dbResponsePlace.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Place not found");
-        }
-        return dbResponsePlace.get();
     }
 }
