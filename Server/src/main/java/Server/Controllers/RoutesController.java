@@ -1,6 +1,7 @@
 package Server.Controllers;
 
 import Server.Domain.*;
+import Server.Model.BuildJson;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @Controller
-@RequestMapping(path="/routes")
+@RequestMapping(path = "/routes")
 public class RoutesController {
     @Autowired
     private RoutesRepository routesRepository;
@@ -22,63 +23,38 @@ public class RoutesController {
     @Autowired
     private RouteCommentsRepository routeCommentsRepository;
 
-    private JSONObject buildJsonRoute(Route route){
-        var routeJSON = new JSONObject();
-        routeJSON
-                .put("accumulatedScore", route.getAccumulatedScore())
-                .put("public", route.getPublic())
-                .put("usersVoted", route.getUsersVoted())
-                .put("userID", route.getUser().getId());
-        return routeJSON;
-    }
-
-    private JSONObject buildJsonPointsOfRoute(PointOfRoute pointOfRoute){
-        var pointsJSON = new JSONObject();
-        pointsJSON
-                .put("pointNumber", pointOfRoute.getPointNumber())
-                .put("routeId", pointOfRoute.getRoute().getId())
-                .put("placeId", pointOfRoute.getPlace().getId());
-        return pointsJSON;
-    }
-
-    private JSONObject buildJsonRouteComment(RouteComment routeComment){
-        var pointsJSON = new JSONObject();
-        pointsJSON
-                .put("routeId", routeComment.getRoute().getId())
-                .put("userId", routeComment.getUser().getId())
-                .put("content", routeComment.getContent());
-        return pointsJSON;
-    }
-
-    @GetMapping(path="")
-    public @ResponseBody String getAllRoutes(){
+    @GetMapping(path = "")
+    public @ResponseBody
+    String getAllRoutes() {
         var routes = routesRepository.findAll();
         var response = new JSONObject();
-        for (var route: routes){
-            response.put(route.getId().toString(), this.buildJsonRoute(route));
+        for (var route : routes) {
+            response.put(route.getId().toString(), BuildJson.buildJsonRoute(route));
         }
         return response.toString();
     }
 
 
-    @GetMapping(path="/{id}")
-    public @ResponseBody String getRoute(@PathVariable String id){
+    @GetMapping(path = "/{id}")
+    public @ResponseBody
+    String getRoute(@PathVariable String id) {
         var dbResponse = routesRepository.findById(Long.parseLong(id));
-        if(dbResponse.isEmpty()){
+        if (dbResponse.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found");
         }
         var route = dbResponse.get();
         var response = new JSONObject();
-        response.put(route.getId().toString(), this.buildJsonRoute(route));
+        response.put(route.getId().toString(), BuildJson.buildJsonRoute(route));
         return response.toString();
     }
 
-    @PostMapping(path= "")
-    public @ResponseBody String addRoute(@RequestParam String ispublic, @RequestParam String userID){
+    @PostMapping(path = "")
+    public @ResponseBody
+    String addRoute(@RequestParam String ispublic, @RequestParam String userID) {
         var route = new Route();
         route.setPublic(Boolean.parseBoolean(ispublic));
         var dbResponse = usersRepository.findById(Long.parseLong(userID));
-        if(dbResponse.isEmpty()){
+        if (dbResponse.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         route.setUser(dbResponse.get());
@@ -86,10 +62,11 @@ public class RoutesController {
         return "ok";
     }
 
-    @DeleteMapping(path="/{id}")
-    public @ResponseBody String deleteRoute(@PathVariable String id){
+    @DeleteMapping(path = "/{id}")
+    public @ResponseBody
+    String deleteRoute(@PathVariable String id) {
         var dbResponse = routesRepository.findById(Long.parseLong(id));
-        if(dbResponse.isEmpty()){
+        if (dbResponse.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found");
         }
         var route = dbResponse.get();
@@ -97,29 +74,31 @@ public class RoutesController {
         return "ok";
     }
 
-    @GetMapping(path="/{id}/pointsOfRoute")
-    public @ResponseBody String getAllPoints(@PathVariable String id){
+    @GetMapping(path = "/{id}/pointsOfRoute")
+    public @ResponseBody
+    String getAllPoints(@PathVariable String id) {
         var dbResponse = this.routesRepository.findById(Long.parseLong(id));
-        if (dbResponse.isEmpty()){
+        if (dbResponse.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found");
         }
         var route = dbResponse.get();
         var points = route.getPointsOfRoutes();
         var response = new JSONObject();
-        for (var point : points){
-            response.put(point.getId().toString(), this.buildJsonPointsOfRoute(point));
+        for (var point : points) {
+            response.put(point.getId().toString(), BuildJson.buildJsonPointsOfRoute(point));
         }
         return response.toString();
     }
 
-    @PostMapping(path="/{routeId}/pointsOfRoute")
-    public @ResponseBody String addPoint(@PathVariable String routeId, @RequestParam String pointNumber, @RequestParam String placeID){
+    @PostMapping(path = "/{routeId}/pointsOfRoute")
+    public @ResponseBody
+    String addPoint(@PathVariable String routeId, @RequestParam String pointNumber, @RequestParam String placeID) {
         var dbResponseRoute = this.routesRepository.findById(Long.parseLong(routeId));
-        if(dbResponseRoute.isEmpty()){
+        if (dbResponseRoute.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found");
         }
         var dbResponsePlace = this.placesRepository.findById(Long.parseLong(placeID));
-        if(dbResponsePlace.isEmpty()){
+        if (dbResponsePlace.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Place not found");
         }
         var point = new PointOfRoute();
@@ -130,8 +109,9 @@ public class RoutesController {
         return "ok";
     }
 
-    @DeleteMapping(path="/{routeId}/PointsOfRoute/{pointId}")
-    public @ResponseBody String deletePoint(@PathVariable String pointId, @PathVariable String routeId) {
+    @DeleteMapping(path = "/{routeId}/PointsOfRoute/{pointId}")
+    public @ResponseBody
+    String deletePoint(@PathVariable String pointId, @PathVariable String routeId) {
         var dbResponseRoute = this.routesRepository.findById(Long.parseLong(routeId));
         if (dbResponseRoute.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found");
@@ -145,30 +125,32 @@ public class RoutesController {
         return "ok";
     }
 
-    @GetMapping(path="/{id}/comments")
-    public @ResponseBody String getRouteComments(@PathVariable String id){
+    @GetMapping(path = "/{id}/comments")
+    public @ResponseBody
+    String getRouteComments(@PathVariable String id) {
         var dbResponse = routesRepository.findById(Long.parseLong(id));
-        if(dbResponse.isEmpty()){
+        if (dbResponse.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found");
         }
         var route = dbResponse.get();
         var response = new JSONObject();
-        for (var comment : route.getRouteComments()){
-            response.put(comment.getId().toString(), this.buildJsonRouteComment(comment));
+        for (var comment : route.getRouteComments()) {
+            response.put(comment.getId().toString(), BuildJson.buildJsonRouteComment(comment));
         }
         return "ok";
     }
 
-    @PostMapping(path="/{id}/comments")
-    public @ResponseBody String addRouteComment(@PathVariable String routeId, @RequestParam String userId, @RequestParam String content){
+    @PostMapping(path = "/{id}/comments")
+    public @ResponseBody
+    String addRouteComment(@PathVariable String id, @RequestParam String userId, @RequestParam String content) {
         var comment = new RouteComment();
         var dbResponseUser = this.usersRepository.findById(Long.parseLong(userId));
-        if(dbResponseUser.isEmpty()){
+        if (dbResponseUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         comment.setUser(dbResponseUser.get());
-        var dbResponseRoute = this.routesRepository.findById(Long.parseLong(routeId));
-        if(dbResponseRoute.isEmpty()){
+        var dbResponseRoute = this.routesRepository.findById(Long.parseLong(id));
+        if (dbResponseRoute.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found");
         }
         comment.setRoute(dbResponseRoute.get());
@@ -177,10 +159,11 @@ public class RoutesController {
         return "ok";
     }
 
-    @DeleteMapping(path="/{id}/comments/{commentId}")
-    public @ResponseBody String deleteRouteComment(@PathVariable String commentId){
+    @DeleteMapping(path = "/{id}/comments/{commentId}")
+    public @ResponseBody
+    String deleteRouteComment(@PathVariable String commentId) {
         var dbResponse = this.routeCommentsRepository.findById(Long.parseLong(commentId));
-        if(dbResponse.isEmpty()){
+        if (dbResponse.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found");
         }
         var comment = dbResponse.get();

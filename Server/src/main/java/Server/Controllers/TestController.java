@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 //this is for testing
 @Controller
-@RequestMapping(path="/demo")
+@RequestMapping(path = "/demo")
 public class TestController {
     @Autowired
     private UsersRepository usersRepository;
 
-    @PostMapping(path="/add")
+    @PostMapping(path = "/add")
     public @ResponseBody
     String addNewUser(@RequestParam String username, @RequestParam String password, @RequestParam String email,
-                   @RequestParam String firstName, @RequestParam String surname, @RequestParam String birthDate) {
+                      @RequestParam String firstName, @RequestParam String surname, @RequestParam String birthDate) {
         boolean b = AddUser.addUser(username, password, email, firstName, surname, birthDate, usersRepository);
         if (b) {
             return "Saved";
