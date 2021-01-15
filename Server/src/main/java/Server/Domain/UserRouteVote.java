@@ -6,7 +6,6 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
-//TODO czy pola takie jak id powinny mieć setter czy tylko gettery? (Tyczy)
 @Entity
 @Table(name = "UserRouteVotes")
 public class UserRouteVote {

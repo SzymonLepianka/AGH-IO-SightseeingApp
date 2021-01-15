@@ -40,6 +40,7 @@ public class RoutesController {
                 .put("placeId", pointOfRoute.getPlace().getId());
         return pointsJSON;
     }
+
     private JSONObject buildJsonRouteComment(RouteComment routeComment){
         var pointsJSON = new JSONObject();
         pointsJSON
@@ -96,7 +97,6 @@ public class RoutesController {
         return "ok";
     }
 
-    //routes/{id}/pointsOfRoute get, post, delete
     @GetMapping(path="/{id}/pointsOfRoute")
     public @ResponseBody String getAllPoints(@PathVariable String id){
         var dbResponse = this.routesRepository.findById(Long.parseLong(id));
@@ -144,7 +144,7 @@ public class RoutesController {
         this.pointsOfRoutesRepository.delete(point);
         return "ok";
     }
-    //routes/{id}/comments get, post, delete
+
     @GetMapping(path="/{id}/comments")
     public @ResponseBody String getRouteComments(@PathVariable String id){
         var dbResponse = routesRepository.findById(Long.parseLong(id));

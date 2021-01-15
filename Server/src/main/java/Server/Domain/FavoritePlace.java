@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "FavouritePlaces")
 public class FavoritePlace {
-    //TODO Zastanowić się jakie pola muszą być unikatowe, jakich getterów i seterów potrzebujemy
+
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
