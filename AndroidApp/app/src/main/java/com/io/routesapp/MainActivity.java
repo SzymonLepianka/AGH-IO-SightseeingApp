@@ -22,7 +22,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import org.json.JSONException;
 
-import java.security.acl.AclEntry;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -41,14 +40,15 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        loggedInUser = new LoggedInUser("", "", "", new HashMap<String, String>());
+        loggedInUser = new LoggedInUser(0, "", "", "", new HashMap<String, String>());
         loggedInUser.setCookie("AccessToken", intent.getStringExtra("AccessToken"));
         loggedInUser.setCookie("RefreshToken", intent.getStringExtra("RefreshToken"));
 
         HTTPClient = new httpClient(this.getApplicationContext(), "MainActivity");
 
         if (Objects.requireNonNull(intent.getStringExtra("PreviousActivity")).equals("login")) {
-            loggedInUser.setUserId(intent.getStringExtra("username"));
+            loggedInUser.setUserId(intent.getIntExtra("userId", 0));
+            loggedInUser.setUsername(intent.getStringExtra("username"));
             loggedInUser.setDisplayName(intent.getStringExtra("displayName"));
             loggedInUser.setEmail(intent.getStringExtra("email"));
         }
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = mySharedPreferences.edit();
             editor.putString("AccessToken", loggedInUser.getCookies().get("AccessToken"));
             editor.putString("RefreshToken", loggedInUser.getCookies().get("RefreshToken"));
-            editor.putString("username", loggedInUser.getUserId());
+            editor.putString("username", loggedInUser.getUsername());
             editor.apply();
         }
     }
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = mySharedPreferences.edit();
             editor.putString("AccessToken", loggedInUser.getCookies().get("AccessToken"));
             editor.putString("RefreshToken", loggedInUser.getCookies().get("RefreshToken"));
-            editor.putString("username", loggedInUser.getUserId());
+            editor.putString("username", loggedInUser.getUsername());
             editor.apply();
         }
     }

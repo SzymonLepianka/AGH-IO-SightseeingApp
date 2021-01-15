@@ -42,7 +42,7 @@ public class ProfileFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
         final TextView username = root.findViewById(R.id.username);
         final TextView displayName = root.findViewById(R.id.displayName);
-        username.setText(loggedInUser.getUserId());
+        username.setText(loggedInUser.getUsername());
         displayName.setText(loggedInUser.getDisplayName());
         Button logout_button = root.findViewById(R.id.log_out);
         logout_button.setOnClickListener(new View.OnClickListener() {

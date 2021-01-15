@@ -1,7 +1,5 @@
 package com.io.routesapp.data;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.io.routesapp.MainActivity;
@@ -154,10 +152,10 @@ public class LoginDataSource {
             Thread.sleep(10);
         }
 
-        String userID = userJSON.getString("username");
+        int userID = Integer.parseInt(userJSON.getString("user_id"));
         String displayName = userJSON.getString("first_name") +
                 " " + userJSON.getString("surname");
         String email = userJSON.getString("email");
-        return new LoggedInUser(userID, displayName, email, cookies);
+        return new LoggedInUser(userID, username, displayName, email, cookies);
     }
 }

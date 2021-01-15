@@ -7,21 +7,25 @@ import java.util.HashMap;
  */
 public class LoggedInUser {
 
-    private String userId;
+    private int userId;
+    private String username;
     private String displayName;
     private String email;
     private HashMap<String, String> cookies;
 
-    public LoggedInUser(String userId, String displayName, String email, HashMap<String, String> cookies) {
-        this.userId = userId;
+    public LoggedInUser(int userID, String username, String displayName, String email, HashMap<String, String> cookies) {
+        this.userId = userID;
+        this.username = username;
         this.displayName = displayName;
         this.email = email;
         this.cookies = cookies;
     }
 
-    public String getUserId() {
+    public int getUserId() {
         return userId;
     }
+
+    public String getUsername() {return  username; }
 
     public String getDisplayName() {
         return displayName;
@@ -35,8 +39,8 @@ public class LoggedInUser {
         cookies.put(key, value);
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setDisplayName(String displayName) {
@@ -49,5 +53,9 @@ public class LoggedInUser {
 
     public void setCookies(HashMap<String, String> cookies) {
         this.cookies = cookies;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 }

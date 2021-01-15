@@ -2,6 +2,7 @@ package com.io.routesapp.data;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.io.routesapp.MainActivity;
 import com.io.routesapp.R;
@@ -26,8 +27,10 @@ import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class httpClient {
@@ -228,6 +231,45 @@ public class httpClient {
         return  placeReviewList;
     }
 
+    public void addPlaceReview(PlaceReview review){
+
+        String url = baseURL + "/places/" + review.getPlaceID() + "/comments"; //10.0.2.2 - localhost
+
+        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
+        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .cookieJar(cookieHelper.cookieJar())
+                .build();
+
+        RequestBody body = new FormBody.Builder()
+                .add("placeId", review.getPlaceID())
+                .add("userId", String.valueOf(MainActivity.getLoggedInUser().getUserId()))
+                .add("content", review.getContent())
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Error in response from IO Server :( error code: " + response.code());
+                } else {
+                    //Toast.makeText(context, "Review added successfully!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     //nie było mapowania dla ulubonych w Server \Gosia
     public ArrayList<Place> getFavouritePlaces(int userID){
 
@@ -394,11 +436,11 @@ public class httpClient {
             Thread.sleep(10);
         }
 
-        String userID = userJSON.getString("username");
+        int userID = userJSON.getInt("user_id");
         String displayName = userJSON.getString("first_name") +
                 " " + userJSON.getString("surname");
         String email = userJSON.getString("email");
-        return new LoggedInUser(userID, displayName, email, MainActivity.getLoggedInUser().getCookies());
+        return new LoggedInUser(userID, username, displayName, email, MainActivity.getLoggedInUser().getCookies());
     }
 
     public boolean isTokenValid(String accessToken) throws InterruptedException {

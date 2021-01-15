@@ -129,10 +129,17 @@ public class PlaceInformationFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                SharedRoutesPlacesRepository.placeReviews.add(new PlaceReview("", "0", Objects.requireNonNull(reviewText.getText()).toString()));
+                MainActivity.HTTPClient.addPlaceReview(
+                        new PlaceReview(
+                                String.valueOf(id),
+                                MainActivity.getLoggedInUser().getUsername(),
+                                Objects.requireNonNull(reviewText.getText()).toString()
+                        )
+                );
                 reviewField.setVisibility(View.GONE);
                 firstComment.setVisibility(View.INVISIBLE);
                 sendFAB.setVisibility(View.VISIBLE);
+                Toast.makeText(getContext(), "Your review will be added!", Toast.LENGTH_SHORT).show();
             }
         });
 
