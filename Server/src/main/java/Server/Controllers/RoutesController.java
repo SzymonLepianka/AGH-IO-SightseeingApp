@@ -137,7 +137,7 @@ public class RoutesController {
         for (var comment : route.getRouteComments()) {
             response.put(comment.getId().toString(), BuildJson.buildJsonRouteComment(comment));
         }
-        return "ok";
+        return response.toString();
     }
 
     @PostMapping(path = "/{id}/comments")
