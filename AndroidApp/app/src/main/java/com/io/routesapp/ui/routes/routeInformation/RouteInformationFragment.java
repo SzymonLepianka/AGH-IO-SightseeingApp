@@ -107,7 +107,7 @@ public class RouteInformationFragment extends Fragment {
             firstComment.setVisibility(View.VISIBLE);
         }
 
-        routeReviewAdapter = new RouteReviewAdapter(SharedRoutesPlacesRepository.routeReviews);
+        routeReviewAdapter = new RouteReviewAdapter(reviewsList);
         mRecyclerView.setAdapter(routeReviewAdapter);
 
         addFAB = root.findViewById(R.id.add_fab);

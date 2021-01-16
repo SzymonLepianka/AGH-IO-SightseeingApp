@@ -40,7 +40,7 @@
                         tools:text="@tools:sample/cities" />
 
                     <RatingBar
-                        android:id="@+id/routeRatingBar"
+                        android:id="@+id/route_rating_bar"
                         style="@android:style/Widget.Material.RatingBar.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

@@ -30,7 +30,7 @@ public class StartActivity extends AppCompatActivity {
 
         httpClient HTTPClient = new httpClient(this.getApplicationContext(), "StartActivity");
 
-        @SuppressLint("WorldReadableFiles") SharedPreferences mySharedPreferences = getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
+        SharedPreferences mySharedPreferences = getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
         cookies = new HashMap<>();
         if(mySharedPreferences.contains("AccessToken")) {
             cookies.put("AccessToken", mySharedPreferences.getString("AccessToken", ""));

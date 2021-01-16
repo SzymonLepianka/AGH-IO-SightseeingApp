@@ -67,6 +67,7 @@ public class RouteReviewAdapter extends RecyclerView.Adapter<com.io.routesapp.ui
 
     @Override
     public int getItemCount() {
+        if (localDataSet.isEmpty()) {return 0;}
         return localDataSet.size();
     }
 }

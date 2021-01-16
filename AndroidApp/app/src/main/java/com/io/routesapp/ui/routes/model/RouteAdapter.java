@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -27,11 +28,13 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
         private final TextView routeNameView;
         private final TextView routeDescriptionView;
         private int routeID;
+        private final RatingBar routeRatingBar;
 
         public ViewHolder(View view) {
             super(view);
             routeNameView = view.findViewById(R.id.route_name);
             routeDescriptionView = view.findViewById(R.id.route_description);
+            routeRatingBar = view.findViewById(R.id.route_rating_bar);
             CardView cardView = view.findViewById(R.id.route_card_view);
             cardView.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
@@ -64,6 +67,9 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
 
         public void setRouteID(int id) { this.routeID = id; }
 
+        public void setRating(float rating){
+            routeRatingBar.setRating(rating);
+        }
     }
 
     public RouteAdapter(ArrayList<Route> dataSet) {
@@ -85,10 +91,14 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
         viewHolder.getRouteNameView().setText(localDataSet.get(position).getName());
         viewHolder.getRouteDescriptionView().setText(localDataSet.get(position).generateDescription());
         viewHolder.setRouteID(localDataSet.get(position).getId());
+        viewHolder.setRating(
+                (float) localDataSet.get(position).accumulatedScore/localDataSet.get(position).usersVoted
+        );
     }
 
     @Override
     public int getItemCount() {
+        if (localDataSet.isEmpty()){return 0;}
         return localDataSet.size();
     }
 }

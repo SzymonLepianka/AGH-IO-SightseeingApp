@@ -69,6 +69,14 @@ public class Route {
                 "Kraków Barbican"));
     }
 
+    public Route(int id, int accumulatedScore, ArrayList<Place> pointsOfRoute) {
+        this.id = id;
+        this.accumulatedScore = accumulatedScore;
+        this.placesOfRoute = pointsOfRoute;
+        this.name = "Route " + id;
+        this.isPublic = true;
+    }
+
     public String getName() {
         return name;
     }

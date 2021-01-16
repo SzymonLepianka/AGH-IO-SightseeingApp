@@ -85,23 +85,23 @@ public class httpClient {
 
         ArrayList<Place> placesList = new ArrayList<>();
         JSONArray idArray =responseJSON.names();
-        assert idArray != null;
-        for (int i = 0; i < idArray.length(); i++){
-            String id = (String) idArray.get(i);
-            JSONObject placeInfo = responseJSON.getJSONObject(String.valueOf(id));
-            Boolean valid = placeInfo.getBoolean("valid");
-            Double latitude = placeInfo.getDouble("latitude");
-            Double longitude = placeInfo.getDouble("longitude");
-            String name = placeInfo.getString("name");
-            String description = placeInfo.getString("description");
-            int accumulatedScore = placeInfo.getInt("accumulatedScore");
-            int usersVoted = placeInfo.getInt("usersVoted");
-            Place newPlaceFromJSON = new Place(Integer.parseInt(id), name, valid,
-                    latitude, longitude, 0,
-                    accumulatedScore, usersVoted, description);
-            placesList.add(newPlaceFromJSON);
+        if (idArray != null) {
+            for (int i = 0; i < idArray.length(); i++) {
+                String id = (String) idArray.get(i);
+                JSONObject placeInfo = responseJSON.getJSONObject(String.valueOf(id));
+                Boolean valid = placeInfo.getBoolean("valid");
+                Double latitude = placeInfo.getDouble("latitude");
+                Double longitude = placeInfo.getDouble("longitude");
+                String name = placeInfo.getString("name");
+                String description = placeInfo.getString("description");
+                int accumulatedScore = placeInfo.getInt("accumulatedScore");
+                int usersVoted = placeInfo.getInt("usersVoted");
+                Place newPlaceFromJSON = new Place(Integer.parseInt(id), name, valid,
+                        latitude, longitude, 0,
+                        accumulatedScore, usersVoted, description);
+                placesList.add(newPlaceFromJSON);
+            }
         }
-
         return placesList;
     }
 
@@ -209,7 +209,7 @@ public class httpClient {
         ArrayList<PlaceReview> placeReviewList = new ArrayList<>();
         JSONArray idArray = responseJSON.names();
         if (idArray != null) {
-            for (int i = 0; i < idArray.length() ; i++){
+            for (int i = 0; i < idArray.length(); i++) {
                 String reviewId = String.valueOf(idArray.get(i));
                 JSONObject placeInfo = responseJSON.getJSONObject(reviewId);
                 String authorID = placeInfo.getString("username");
@@ -310,13 +310,14 @@ public class httpClient {
 
         ArrayList<Route> routesList = new ArrayList<>();
         JSONArray idArray = responseJSON.names();
-        assert idArray != null;
-        for (int i = 0; i < idArray.length(); i++){
-            String id = (String) idArray.get(i);
-            JSONObject placeInfo = responseJSON.getJSONObject(String.valueOf(id));
-            int score = placeInfo.getInt("accumulatedScore");
-            Route newRouteFromJSON = new Route(Integer.parseInt(id), score);
-            routesList.add(newRouteFromJSON);
+        if (idArray != null) {
+            for (int i = 0; i < idArray.length(); i++) {
+                String id = (String) idArray.get(i);
+                JSONObject placeInfo = responseJSON.getJSONObject(String.valueOf(id));
+                int score = placeInfo.getInt("accumulatedScore");
+                Route newRouteFromJSON = new Route(Integer.parseInt(id), score, getPointsOfRoute(Integer.parseInt(id)));
+                routesList.add(newRouteFromJSON);
+            }
         }
         return routesList;
     }
@@ -412,12 +413,14 @@ public class httpClient {
         }
         ArrayList<Place> pointsOfRoute = new ArrayList<>();
         JSONArray idArray = responseJSON.names();
-        assert idArray != null;
-        for (int i = 0; i < idArray.length(); i++){
-            String pointId = String.valueOf(idArray.get(i));
-            JSONObject pointInfo = responseJSON.getJSONObject(pointId);
-            int placeID = pointInfo.getInt("placeId");
-            pointsOfRoute.add(getPlace(id));
+        JSONObject routesListJSON = responseJSON;
+        if (idArray != null) {
+            for (int i = 0; i < idArray.length(); i++) {
+                String pointId = String.valueOf(idArray.get(i));
+                JSONObject pointInfo = routesListJSON.getJSONObject(pointId);
+                int placeID = pointInfo.getInt("placeId");
+                pointsOfRoute.add(getPlace(placeID));
+            }
         }
         return pointsOfRoute;
     }
@@ -426,7 +429,7 @@ public class httpClient {
         // get reviews for route
         // constructor: RouteReview(int routeID, int authorID, String content)
         responseJSON = null;
-        String url = baseURL + "/routes/" + id + "/comments"; //10.0.2.2 - localhost
+        String url = baseURL + "routes/" + id + "/comments"; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
         cookieHelper.setCookie(url, "AccessToken" , accessToken);
@@ -455,29 +458,32 @@ public class httpClient {
                     responseJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    responseJSON = new JSONObject();
                 }
             }
         });
+
         while (responseJSON == null) {
             Thread.sleep(10);
         }
 
         ArrayList<RouteReview> routeReviewList = new ArrayList<>();
         JSONArray idArray = responseJSON.names();
-        assert idArray != null;
-        for (int i = 0; i < idArray.length(); i++){
-            String reviewId = String.valueOf(idArray.get(i));
-            JSONObject placeInfo = responseJSON.getJSONObject(reviewId);
-            String authorID = placeInfo.getString("username");
-            String content = placeInfo.getString("content");
-            RouteReview newRouteReviewFromJSON = new RouteReview(reviewId, authorID, content);
-            routeReviewList.add(newRouteReviewFromJSON);
+        if (idArray != null) {
+            for (int i = 0; i < idArray.length(); i++) {
+                String reviewId = String.valueOf(idArray.get(i));
+                JSONObject routeInfo = responseJSON.getJSONObject(reviewId);
+                String authorID = routeInfo.getString("userId");
+                String content = routeInfo.getString("content");
+                RouteReview newRouteReviewFromJSON = new RouteReview(reviewId, authorID, content);
+                routeReviewList.add(newRouteReviewFromJSON);
+            }
         }
         return  routeReviewList;
     }
 
     public void addRouteReview(RouteReview review){
-        String url = baseURL + "routes/" + review.getRouteID() + "comments";
+        String url = baseURL + "routes/" + review.getRouteID() + "/comments";
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
         cookieHelper.setCookie(url, "AccessToken" , accessToken);
 
@@ -486,7 +492,7 @@ public class httpClient {
                 .build();
 
         RequestBody body = new FormBody.Builder()
-                .add("placeId", review.getRouteID())
+                .add("id", review.getRouteID())
                 .add("userId", String.valueOf(MainActivity.getLoggedInUser().getUserId()))
                 .add("content", review.getContent())
                 .build();

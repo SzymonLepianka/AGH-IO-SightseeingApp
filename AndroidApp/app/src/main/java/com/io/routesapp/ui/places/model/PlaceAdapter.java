@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
@@ -28,6 +29,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         private final CardView cardView;
         private final TextView placeNameView;
         private final TextView placeDescriptionView;
+        private final RatingBar placeRatingBar;
         private int placeID;
 
         public ViewHolder(View view) {
@@ -43,6 +45,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
 
             placeNameView = view.findViewById(R.id.place_name);
             placeDescriptionView = view.findViewById(R.id.place_description);
+            placeRatingBar = view.findViewById(R.id.place_rating_bar);
 
             cardView.setOnLongClickListener(v -> {
                 Place place = null;
@@ -75,6 +78,10 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
 
         public void setPlaceID(int id){ placeID = id; }
 
+        public void setRating(float rating){
+            placeRatingBar.setRating(rating);
+        }
+
     }
 
     public PlaceAdapter(ArrayList<Place> dataSet) {
@@ -95,6 +102,9 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         viewHolder.getPlaceNameView().setText(localDataSet.get(position).getName());
         viewHolder.getPlaceDescriptionView().setText(localDataSet.get(position).getDescription());
         viewHolder.setPlaceID(localDataSet.get(position).getId());
+        viewHolder.setRating(
+                (float) localDataSet.get(position).accumulatedScore/localDataSet.get(position).usersVoted
+        );
     }
 
     @Override
