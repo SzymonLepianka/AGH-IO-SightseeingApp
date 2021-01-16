@@ -10,13 +10,20 @@ import java.util.ArrayList;
 
 public class Route {
     int id;
-    int authorID;
     int accumulatedScore;
     int usersVoted;
     String name;
     Boolean isPublic;
     ArrayList<Place> placesOfRoute;
 
+    public Route(int id, int accumulatedScore, int usersVoted, Boolean isPublic, ArrayList<Place> placesOfRoute) {
+        this.id = id;
+        this.accumulatedScore = accumulatedScore;
+        this.usersVoted = usersVoted;
+        this.isPublic = isPublic;
+        this.placesOfRoute = placesOfRoute;
+        this.name = "Route " + id;
+    }
 
     public Route(int id) {
         placesOfRoute = new ArrayList<>();
@@ -68,10 +75,6 @@ public class Route {
 
     public int getId() {
         return id;
-    }
-
-    public int getAuthorID() {
-        return authorID;
     }
 
     public int getAccumulatedScore() {

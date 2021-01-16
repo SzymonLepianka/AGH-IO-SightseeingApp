@@ -11,11 +11,11 @@ public class RouteReview extends Review {
         this.setContent(content);
     }
 
-    public String getPlaceID() {
+    public String getRouteID() {
         return routeID;
     }
 
-    public void setPlaceID(String routeID) {
+    public void setRouteID(String routeID) {
         this.routeID = routeID;
     }
 

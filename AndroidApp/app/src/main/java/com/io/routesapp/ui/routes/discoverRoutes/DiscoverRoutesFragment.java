@@ -11,10 +11,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.io.routesapp.MainActivity;
 import com.io.routesapp.R;
 import com.io.routesapp.data.SharedRoutesPlacesRepository;
 import com.io.routesapp.ui.routes.model.Route;
 import com.io.routesapp.ui.routes.model.RouteAdapter;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 
@@ -29,6 +32,11 @@ public class DiscoverRoutesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            getRoutesFromDataSource();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -37,10 +45,14 @@ public class DiscoverRoutesFragment extends Fragment {
         mRecyclerView = root.findViewById(R.id.routes_list);
         layoutManager = new LinearLayoutManager(getActivity());
 
-        routeAdapter = new RouteAdapter(SharedRoutesPlacesRepository.routesAvailable);
+        routeAdapter = new RouteAdapter(routesList);
         mRecyclerView.setAdapter(routeAdapter);
 
         return root;
+    }
+
+    public void getRoutesFromDataSource() throws JSONException, InterruptedException {
+        routesList = MainActivity.HTTPClient.getRoutes();
     }
 
 }

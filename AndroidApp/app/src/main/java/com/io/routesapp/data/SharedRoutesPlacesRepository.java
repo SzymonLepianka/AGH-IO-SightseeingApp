@@ -22,54 +22,6 @@ public class SharedRoutesPlacesRepository {
     }
 
     public void init(){
-        placesAvailable = new ArrayList<>();
-        placesAvailable.add(new Place(
-                0,
-                "Wawel",
-                true,50.054316,19.9350402,
-                0,
-                0,
-                0,
-                "Wawel Castle"));
-        placesAvailable.add(new Place(
-                1,
-                "Sukiennice",
-                true,50.0613741,19.9361222,
-                0,
-                0,
-                0,
-                "The Cloth Hall"));
-        placesAvailable.add(new Place(
-                2,
-                "Barbakan Krakowski",
-                true,50.065569, 19.941689,
-                0,
-                0,
-                0,
-                "Kraków Barbican"));
-
-        routesAvailable = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            Route route = new Route(i);
-            ArrayList<Place> placesInRoute = new ArrayList<>();
-            placesInRoute.addAll(placesAvailable);
-            route.setPlacesOfRoute(placesInRoute);
-            routesAvailable.add(route);
-        }
-
-        placeReviews = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            placeReviews.add(new PlaceReview("", "", "Wonderful place!"
-            ));
-        }
-
-        routeReviews = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            routeReviews.add(new RouteReview(
-                    "0", "0", "I loved this route, although it was a bit too short!"
-            ));
-        }
-
         favouritePlaces = new ArrayList<>();
         favouriteRoutes = new ArrayList<>();
     }
@@ -88,12 +40,5 @@ public class SharedRoutesPlacesRepository {
             names.add(route.getName());
         }
         return names;
-    }
-    public ArrayList<Place> getPlacesAvailable() {
-        return placesAvailable;
-    }
-
-    public ArrayList<Route> getRoutesAvailable() {
-        return routesAvailable;
     }
 }

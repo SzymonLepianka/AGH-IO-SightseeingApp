@@ -1,6 +1,7 @@
 package com.io.routesapp.ui.routes.model;
 
 import android.os.Build;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,15 +26,18 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView routeNameView;
         private final TextView routeDescriptionView;
+        private int routeID;
 
         public ViewHolder(View view) {
             super(view);
             routeNameView = view.findViewById(R.id.route_name);
             routeDescriptionView = view.findViewById(R.id.route_description);
             CardView cardView = view.findViewById(R.id.route_card_view);
-            cardView.setOnClickListener(v ->
-                    Navigation.findNavController(v).navigate(R.id.nav_route_information)
-            );
+            cardView.setOnClickListener(v -> {
+                Bundle bundle = new Bundle();
+                bundle.putInt("id", routeID);
+                Navigation.findNavController(v).navigate(R.id.nav_route_information, bundle);
+            });
             cardView.setOnLongClickListener(v -> {
                 Route route = new Route(routeNameView.getText().toString());
                 if (!SharedRoutesPlacesRepository.getFavouriteRoutesNames().contains(route.name)) {
@@ -58,6 +62,8 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
             return routeDescriptionView;
         }
 
+        public void setRouteID(int id) { this.routeID = id; }
+
     }
 
     public RouteAdapter(ArrayList<Route> dataSet) {
@@ -78,6 +84,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getRouteNameView().setText(localDataSet.get(position).getName());
         viewHolder.getRouteDescriptionView().setText(localDataSet.get(position).generateDescription());
+        viewHolder.setRouteID(localDataSet.get(position).getId());
     }
 
     @Override

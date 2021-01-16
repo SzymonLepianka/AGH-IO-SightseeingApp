@@ -321,9 +321,105 @@ public class httpClient {
         return routesList;
     }
 
-    public ArrayList<Place> getPointsOfRoute(int id) {
+    public Route getRoute(int id) throws InterruptedException, JSONException {
+        //setting json to null so as to wait for the new response
+        responseJSON = null;
+
+        String url = baseURL + "/routes/" + id; //10.0.2.2 - localhost
+
+        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
+        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .cookieJar(cookieHelper.cookieJar())
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.d("OKHTTP3", Objects.requireNonNull(e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) throws IOException {
+                if (!response.isSuccessful()){
+                    Log.d("OKHTTP3", String.valueOf(response.code()));
+                    return;
+                }
+                try {
+                    responseJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        while (responseJSON == null) {
+            Thread.sleep(10);
+        }
+
+        JSONObject routeInfo = responseJSON.getJSONObject(String.valueOf(id));
+        Boolean isPublic = routeInfo.getBoolean("public");
+        int accumulatedScore = routeInfo.getInt("accumulatedScore");
+        int usersVoted = routeInfo.getInt("usersVoted");
+
+        return new Route(
+                id, accumulatedScore, usersVoted, isPublic,
+                getPointsOfRoute(id)
+        );
+    }
+
+    public ArrayList<Place> getPointsOfRoute(int id) throws InterruptedException, JSONException {
         //TODO get points of route
-        return new ArrayList<>();
+        responseJSON = null;
+        String url = baseURL + "/routes/" + id + "/pointsOfRoute"; //10.0.2.2 - localhost
+
+        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
+        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .cookieJar(cookieHelper.cookieJar())
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.d("OKHTTP3", Objects.requireNonNull(e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) throws IOException {
+                if (!response.isSuccessful()){
+                    Log.d("OKHTTP3", String.valueOf(response.code()));
+                    return;
+                }
+                try {
+                    responseJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        while (responseJSON == null) {
+            Thread.sleep(10);
+        }
+        ArrayList<Place> pointsOfRoute = new ArrayList<>();
+        JSONArray idArray = responseJSON.names();
+        assert idArray != null;
+        for (int i = 0; i < idArray.length(); i++){
+            String pointId = String.valueOf(idArray.get(i));
+            JSONObject pointInfo = responseJSON.getJSONObject(pointId);
+            int placeID = pointInfo.getInt("placeId");
+            pointsOfRoute.add(getPlace(id));
+        }
+        return pointsOfRoute;
     }
 
     public ArrayList<RouteReview> getRouteReviews(int id)  throws JSONException, InterruptedException{
@@ -378,6 +474,41 @@ public class httpClient {
             routeReviewList.add(newRouteReviewFromJSON);
         }
         return  routeReviewList;
+    }
+
+    public void addRouteReview(RouteReview review){
+        String url = baseURL + "routes/" + review.getRouteID() + "comments";
+        OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
+        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .cookieJar(cookieHelper.cookieJar())
+                .build();
+
+        RequestBody body = new FormBody.Builder()
+                .add("placeId", review.getRouteID())
+                .add("userId", String.valueOf(MainActivity.getLoggedInUser().getUserId()))
+                .add("content", review.getContent())
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Objects.requireNonNull(e).printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Error in response from IO Server :( error code: " + response.code());
+                }
+            }
+        });
     }
 
     //nie było ulubionych \Gosia

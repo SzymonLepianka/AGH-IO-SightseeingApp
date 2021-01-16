@@ -74,7 +74,7 @@ public class PlaceInformationFragment extends Fragment {
         mRecyclerView = root.findViewById(R.id.review_list);
         layoutManager = new LinearLayoutManager(getActivity());
 
-        firstComment = root.findViewById(R.id.firstPlaceComment);
+        firstComment = root.findViewById(R.id.firstComment);
         firstComment.setVisibility(View.INVISIBLE);
 
         if (reviewsList.isEmpty()){

@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RatingBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -22,12 +25,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.io.routesapp.MainActivity;
 import com.io.routesapp.R;
 import com.io.routesapp.data.SharedRoutesPlacesRepository;
 import com.io.routesapp.ui.places.model.Place;
+import com.io.routesapp.ui.places.model.PlaceReview;
 import com.io.routesapp.ui.routes.model.Route;
 import com.io.routesapp.ui.routes.model.RouteReview;
 import com.io.routesapp.ui.routes.model.RouteReviewAdapter;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -41,8 +48,9 @@ public class RouteInformationFragment extends Fragment {
     FloatingActionButton addFAB;
     View reviewField;
     private GoogleMap map;
-    private Polyline polyline;
     private MarkerOptions place1, place2;
+    int id;
+    private TextView firstComment;
 
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
@@ -70,13 +78,20 @@ public class RouteInformationFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        id = requireArguments().getInt("id");
+        try {
+            route = MainActivity.HTTPClient.getRoute(id);
+            reviewsList = MainActivity.HTTPClient.getRouteReviews(id);
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error while loading page...", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_route_information, container, false);
 
-        route = SharedRoutesPlacesRepository.routesAvailable.get(0);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_route);
         assert mapFragment != null;
         mapFragment.getMapAsync(callback);
@@ -84,6 +99,13 @@ public class RouteInformationFragment extends Fragment {
 
         mRecyclerView = root.findViewById(R.id.review_list);
         layoutManager = new LinearLayoutManager(getActivity());
+
+        firstComment = root.findViewById(R.id.firstComment);
+        firstComment.setVisibility(View.INVISIBLE);
+
+        if (reviewsList.isEmpty()){
+            firstComment.setVisibility(View.VISIBLE);
+        }
 
         routeReviewAdapter = new RouteReviewAdapter(SharedRoutesPlacesRepository.routeReviews);
         mRecyclerView.setAdapter(routeReviewAdapter);
@@ -96,7 +118,6 @@ public class RouteInformationFragment extends Fragment {
             addFAB.setVisibility(View.GONE);
         });
 
-        RatingBar placeRatingBar = root.findViewById(R.id.place_rating_bar);
         final TextInputEditText reviewText= root.findViewById(R.id.review_text);
         final FloatingActionButton sendFAB = root.findViewById(R.id.send_fab);
 
@@ -120,10 +141,17 @@ public class RouteInformationFragment extends Fragment {
         });
 
         sendFAB.setOnClickListener(v -> {
-            SharedRoutesPlacesRepository.routeReviews.add(
-                    new RouteReview("0", "", Objects.requireNonNull(reviewText.getText()).toString())
+            MainActivity.HTTPClient.addRouteReview(
+                    new RouteReview(
+                    String.valueOf(id),
+                    MainActivity.getLoggedInUser().getUsername(),
+                    Objects.requireNonNull(reviewText.getText()).toString()
+            )
             );
             reviewField.setVisibility(View.GONE);
+            firstComment.setVisibility(View.INVISIBLE);
+            sendFAB.setVisibility(View.VISIBLE);
+            Toast.makeText(getContext(), "Your review will be added!", Toast.LENGTH_SHORT).show();
         });
 
         return root;
