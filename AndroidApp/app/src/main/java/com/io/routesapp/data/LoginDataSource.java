@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.io.routesapp.MainActivity;
 import com.io.routesapp.data.model.LoggedInUser;
+
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.riversun.okhttp3.OkHttp3CookieHelper;
@@ -62,16 +64,16 @@ public class LoginDataSource {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     throw new IOException("Error in response from DP Server :( error code: " + response.code());
                 } else {
-                    String cookie = (response.headers().get("Set-Cookie").split(";")[0]);
+                    String cookie = (Objects.requireNonNull(response.headers().get("Set-Cookie")).split(";")[0]);
                     cookies.put(cookie.split("=")[0], cookie.split("=")[1]);
                 }
             }
@@ -84,20 +86,21 @@ public class LoginDataSource {
 
     private void getAccessTokenAndRefreshToken() throws InterruptedException {
         OkHttpClient client = new OkHttpClient();
+
         Request request = new Request.Builder()
                 .url(DPExchangeUrl + cookies.get("AuthCode"))
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    throw new IOException("Error in response from DP Server :( error code: " + String.valueOf(response.code()));
+                    throw new IOException("Error in response from DP Server :( error code: " + response.code());
                 } else {
                     String cookie = (response.headers().values("Set-Cookie").get(0).split(";")[0]);
                     cookies.put(cookie.split("=")[0], cookie.split("=")[1]);
@@ -112,7 +115,7 @@ public class LoginDataSource {
         }
     }
 
-    private LoggedInUser getUserData(String username) throws InterruptedException, JSONException, IOException {
+    private LoggedInUser getUserData(String username) throws InterruptedException, JSONException {
 
         String url = IObaseUrl + "users/" + username;
 
@@ -129,12 +132,12 @@ public class LoginDataSource {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     throw new IOException(String.valueOf(response.code()));
                 } else {

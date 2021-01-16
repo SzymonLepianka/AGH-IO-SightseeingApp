@@ -1,4 +1,4 @@
-package com.io.routesapp;
+package com.io.routesapp.data;
 
 import android.text.style.UpdateLayout;
 
@@ -52,9 +52,7 @@ public class SharedRoutesPlacesRepository {
         for (int i = 0; i < 5; i++) {
             Route route = new Route(i);
             ArrayList<Place> placesInRoute = new ArrayList<>();
-            for (Place place : placesAvailable) {
-                placesInRoute.add(place);
-            }
+            placesInRoute.addAll(placesAvailable);
             route.setPlacesOfRoute(placesInRoute);
             routesAvailable.add(route);
         }

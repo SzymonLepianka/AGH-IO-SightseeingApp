@@ -20,18 +20,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.io.routesapp.R;
-import com.io.routesapp.SharedRoutesPlacesRepository;
+import com.io.routesapp.data.SharedRoutesPlacesRepository;
 import com.io.routesapp.ui.places.model.Place;
 import com.io.routesapp.ui.routes.model.Route;
 import com.io.routesapp.ui.routes.model.RouteReview;
 import com.io.routesapp.ui.routes.model.RouteReviewAdapter;
-import com.io.routesapp.ui.routes.repository.RouteReviewsRepository;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class RouteInformationFragment extends Fragment {
     Route route;
@@ -47,16 +46,6 @@ public class RouteInformationFragment extends Fragment {
 
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
-
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
         @Override
         public void onMapReady(GoogleMap googleMap) {
             map = googleMap;
@@ -89,10 +78,11 @@ public class RouteInformationFragment extends Fragment {
 
         route = SharedRoutesPlacesRepository.routesAvailable.get(0);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_route);
+        assert mapFragment != null;
         mapFragment.getMapAsync(callback);
 
 
-        mRecyclerView = (RecyclerView) root.findViewById(R.id.review_list);
+        mRecyclerView = root.findViewById(R.id.review_list);
         layoutManager = new LinearLayoutManager(getActivity());
 
         routeReviewAdapter = new RouteReviewAdapter(SharedRoutesPlacesRepository.routeReviews);
@@ -101,12 +91,9 @@ public class RouteInformationFragment extends Fragment {
         addFAB = root.findViewById(R.id.add_fab);
         reviewField = root.findViewById(R.id.review_field);
 
-        addFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reviewField.setVisibility(View.VISIBLE);
-                addFAB.setVisibility(View.GONE);
-            }
+        addFAB.setOnClickListener(v -> {
+            reviewField.setVisibility(View.VISIBLE);
+            addFAB.setVisibility(View.GONE);
         });
 
         RatingBar placeRatingBar = root.findViewById(R.id.place_rating_bar);
@@ -126,19 +113,17 @@ public class RouteInformationFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!reviewText.getText().toString().isEmpty()){
+                if (!Objects.requireNonNull(reviewText.getText()).toString().isEmpty()){
                     sendFAB.setEnabled(true);
                 }
             }
         });
 
-        sendFAB.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                SharedRoutesPlacesRepository.routeReviews.add(new RouteReview("0", "", reviewText.getText().toString()));
-                reviewField.setVisibility(View.GONE);
-            }
+        sendFAB.setOnClickListener(v -> {
+            SharedRoutesPlacesRepository.routeReviews.add(
+                    new RouteReview("0", "", Objects.requireNonNull(reviewText.getText()).toString())
+            );
+            reviewField.setVisibility(View.GONE);
         });
 
         return root;
@@ -152,28 +137,6 @@ public class RouteInformationFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
-    }
-
-    private void initReviewsList() {
-        RouteReviewsRepository repo = new RouteReviewsRepository();
-        reviewsList = repo.getReviewsList();
-    }
-
-
-    private String getUrl(LatLng origin, LatLng dest, String directionMode) {
-        // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-        // Mode
-        String mode = "mode=" + directionMode;
-        // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + mode;
-        // Output format
-        String output = "json";
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.google_maps_key);
-        return url;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.io.routesapp;
+package com.io.routesapp.ui.start;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -12,6 +12,8 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.io.routesapp.MainActivity;
+import com.io.routesapp.R;
 import com.io.routesapp.data.httpClient;
 import com.io.routesapp.ui.login.LoginActivity;
 
@@ -50,6 +52,7 @@ public class StartActivity extends AppCompatActivity {
                         intent.putExtra("RefreshToken", cookies.get("RefreshToken"));
                         startActivity(intent);
                     } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             } catch (InterruptedException e) {
@@ -57,13 +60,10 @@ public class StartActivity extends AppCompatActivity {
             }
         }
 
-        login_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);
-           }
-        } );
+        login_button.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+       });
     }
 
 }

@@ -7,11 +7,10 @@ import java.util.ArrayList;
 public class RoutesRepository {
     ArrayList<Route> routesList = new ArrayList<>();
 
-    ArrayList<Route> init(){
+    void init(){
         routesList.add(new Route(0));
         routesList.add(new Route(1));
         routesList.add(new Route(2));
-        return routesList;
     }
 
     public ArrayList<Route> getRoutesList(){

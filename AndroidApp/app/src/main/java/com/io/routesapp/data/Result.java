@@ -1,13 +1,15 @@
 package com.io.routesapp.data;
 
-/**
- * A generic class that holds a result success w/ data or an error exception.
- */
+import org.jetbrains.annotations.NotNull;
+
+
+// A generic class that holds a result success w/ data or an error exception.
+
 public class Result<T> {
-    // hide the private constructor to limit subclass types (Success, Error)
     private Result() {
     }
 
+    @NotNull
     @Override
     public String toString() {
         if (this instanceof Result.Success) {
@@ -39,10 +41,6 @@ public class Result<T> {
 
         public Error(Exception error) {
             this.error = error;
-        }
-
-        public Error() {
-
         }
 
         public Exception getError() {

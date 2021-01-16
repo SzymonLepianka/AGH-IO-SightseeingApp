@@ -2,14 +2,12 @@ package com.io.routesapp.data;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.io.routesapp.MainActivity;
 import com.io.routesapp.R;
 import com.io.routesapp.data.model.LoggedInUser;
 import com.io.routesapp.ui.places.model.Place;
 import com.io.routesapp.ui.places.model.PlaceReview;
-import com.io.routesapp.ui.reviews.Review;
 import com.io.routesapp.ui.routes.model.Route;
 import com.io.routesapp.ui.routes.model.RouteReview;
 
@@ -20,9 +18,7 @@ import org.json.JSONObject;
 import org.riversun.okhttp3.OkHttp3CookieHelper;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 
 import okhttp3.Call;
@@ -33,20 +29,14 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+//class used to communicate with servers
+
 public class httpClient {
-    private static JSONObject placesListJSON;
-    private static JSONObject placeJSON;
-    private static JSONObject placeCommentListJSON;
-    private static JSONObject routesListJSON;
-    private static JSONObject routeCommentListJSON;
-    private static JSONObject userJSON;
-    private Context context;
-    private OkHttpClient client;
+    private static JSONObject responseJSON;
     private String baseURL;
     private String accessToken;
 
     public httpClient(Context context, String activityName) {
-        this.context = context;
         baseURL = context.getResources().getString(R.string.baseUrl);
         if (activityName.equals("MainActivity")) {
             accessToken = MainActivity.getLoggedInUser().getCookies().get("AccessToken");
@@ -54,7 +44,7 @@ public class httpClient {
     }
 
     public ArrayList<Place> getPlaces() throws JSONException, InterruptedException {
-        placesListJSON = null;
+        responseJSON = null;
 
         String url = baseURL + "/places"; //10.0.2.2 - localhost
 
@@ -73,7 +63,7 @@ public class httpClient {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.d("OKHTTP3", e.getMessage());
+                Log.d("OKHTTP3", Objects.requireNonNull(e.getMessage()));
             }
 
             @Override
@@ -83,21 +73,22 @@ public class httpClient {
                     return;
                 }
                 try {
-                    placesListJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                    responseJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
-        while (placesListJSON == null) {
+        while (responseJSON == null) {
             Thread.sleep(10);
         }
 
         ArrayList<Place> placesList = new ArrayList<>();
-        JSONArray idArray = placesListJSON.names();
+        JSONArray idArray =responseJSON.names();
+        assert idArray != null;
         for (int i = 0; i < idArray.length(); i++){
             String id = (String) idArray.get(i);
-            JSONObject placeInfo = placesListJSON.getJSONObject(String.valueOf(id));
+            JSONObject placeInfo = responseJSON.getJSONObject(String.valueOf(id));
             Boolean valid = placeInfo.getBoolean("valid");
             Double latitude = placeInfo.getDouble("latitude");
             Double longitude = placeInfo.getDouble("longitude");
@@ -116,7 +107,7 @@ public class httpClient {
 
     public Place getPlace(int id) throws JSONException, InterruptedException {
         //setting json to null so as to wait for the new response
-        placeJSON = null;
+        responseJSON = null;
 
         // send request to server to get place details, parse place information
         // and return new place object
@@ -138,7 +129,7 @@ public class httpClient {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.d("OKHTTP3", e.getMessage());
+                Log.d("OKHTTP3", Objects.requireNonNull(e.getMessage()));
             }
 
             @Override
@@ -148,17 +139,17 @@ public class httpClient {
                     return;
                 }
                 try {
-                    placeJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                    responseJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
-        while (placeJSON == null) {
+        while (responseJSON == null) {
             Thread.sleep(10);
         }
 
-        JSONObject placeInfo = placeJSON.getJSONObject(String.valueOf(id));
+        JSONObject placeInfo = responseJSON.getJSONObject(String.valueOf(id));
         Boolean valid = placeInfo.getBoolean("valid");
         Double latitude = placeInfo.getDouble("latitude");
         Double longitude = placeInfo.getDouble("longitude");
@@ -166,17 +157,16 @@ public class httpClient {
         String description = placeInfo.getString("description");
         int accumulatedScore = placeInfo.getInt("accumulatedScore");
         int usersVoted = placeInfo.getInt("usersVoted");
-        Place place = new Place(id, name, valid,
+
+        return new Place(id, name, valid,
                 latitude, longitude, 0,
                 accumulatedScore, usersVoted, description);
-
-        return place;
     }
 
     public ArrayList<PlaceReview> getPlaceReviews(int id) throws JSONException, InterruptedException{
         //the same for reviews
         // review constructor: PlaceReview(int placeID, int authorID, String content)
-        placeCommentListJSON = null;
+        responseJSON = null;
 
 
         String url = baseURL + "/places/" + id + "/comments"; //10.0.2.2 - localhost
@@ -195,7 +185,7 @@ public class httpClient {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.d("OKHTTP3", e.getMessage());
+                Log.d("OKHTTP3", Objects.requireNonNull(e.getMessage()));
             }
 
             @Override
@@ -205,23 +195,23 @@ public class httpClient {
                     return;
                 }
                 try {
-                    placeCommentListJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                    responseJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
-        while (placeCommentListJSON == null) {
+        while (responseJSON == null) {
             Thread.sleep(10);
         }
 
         //dla każdego comment zwraca JSON z CommentID, UserID, Content
         ArrayList<PlaceReview> placeReviewList = new ArrayList<>();
-        JSONArray idArray = placeCommentListJSON.names();
+        JSONArray idArray = responseJSON.names();
         if (idArray != null) {
             for (int i = 0; i < idArray.length() ; i++){
                 String reviewId = String.valueOf(idArray.get(i));
-                JSONObject placeInfo = placeCommentListJSON.getJSONObject(reviewId);
+                JSONObject placeInfo = responseJSON.getJSONObject(reviewId);
                 String authorID = placeInfo.getString("username");
                 String content = placeInfo.getString("content");
                 PlaceReview newPlaceReviewFromJSON = new PlaceReview(reviewId, authorID, content);
@@ -255,16 +245,14 @@ public class httpClient {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Objects.requireNonNull(e).printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     throw new IOException("Error in response from IO Server :( error code: " + response.code());
-                } else {
-                    //Toast.makeText(context, "Review added successfully!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -280,7 +268,7 @@ public class httpClient {
     }
 
     public ArrayList<Route> getRoutes() throws JSONException, InterruptedException {
-        routesListJSON = null;
+        responseJSON = null;
         //TODO get all public routes
         // route constructor: Route(int id, int accumulated score)
         // return list of routes
@@ -300,7 +288,7 @@ public class httpClient {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.d("OKHTTP3", e.getMessage());
+                Log.d("OKHTTP3", Objects.requireNonNull(e.getMessage()));
             }
 
             @Override
@@ -310,21 +298,22 @@ public class httpClient {
                     return;
                 }
                 try {
-                    routesListJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                    responseJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
-        while (routesListJSON== null) {
+        while (responseJSON == null) {
             Thread.sleep(10);
         }
 
         ArrayList<Route> routesList = new ArrayList<>();
-        JSONArray idArray = routesListJSON.names();
+        JSONArray idArray = responseJSON.names();
+        assert idArray != null;
         for (int i = 0; i < idArray.length(); i++){
             String id = (String) idArray.get(i);
-            JSONObject placeInfo = routesListJSON.getJSONObject(String.valueOf(id));
+            JSONObject placeInfo = responseJSON.getJSONObject(String.valueOf(id));
             int score = placeInfo.getInt("accumulatedScore");
             Route newRouteFromJSON = new Route(Integer.parseInt(id), score);
             routesList.add(newRouteFromJSON);
@@ -332,7 +321,7 @@ public class httpClient {
         return routesList;
     }
 
-    public ArrayList<Place> getPointsOfRoute(int id)  throws JSONException, InterruptedException{
+    public ArrayList<Place> getPointsOfRoute(int id) {
         //TODO get points of route
         return new ArrayList<>();
     }
@@ -340,7 +329,7 @@ public class httpClient {
     public ArrayList<RouteReview> getRouteReviews(int id)  throws JSONException, InterruptedException{
         // get reviews for route
         // constructor: RouteReview(int routeID, int authorID, String content)
-        routeCommentListJSON = null;
+        responseJSON = null;
         String url = baseURL + "/routes/" + id + "/comments"; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
@@ -357,7 +346,7 @@ public class httpClient {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.d("OKHTTP3", e.getMessage());
+                Log.d("OKHTTP3", Objects.requireNonNull(e.getMessage()));
             }
 
             @Override
@@ -367,22 +356,22 @@ public class httpClient {
                     return;
                 }
                 try {
-                    routeCommentListJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
+                    responseJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
-        while (routeCommentListJSON == null) {
+        while (responseJSON == null) {
             Thread.sleep(10);
         }
 
-
         ArrayList<RouteReview> routeReviewList = new ArrayList<>();
-        JSONArray idArray = routeCommentListJSON.names();
+        JSONArray idArray = responseJSON.names();
+        assert idArray != null;
         for (int i = 0; i < idArray.length(); i++){
             String reviewId = String.valueOf(idArray.get(i));
-            JSONObject placeInfo = routeCommentListJSON.getJSONObject(reviewId);
+            JSONObject placeInfo = responseJSON.getJSONObject(reviewId);
             String authorID = placeInfo.getString("username");
             String content = placeInfo.getString("content");
             RouteReview newRouteReviewFromJSON = new RouteReview(reviewId, authorID, content);
@@ -413,18 +402,17 @@ public class httpClient {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Objects.requireNonNull(e).printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                if (!response.isSuccessful()) {
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                if (!Objects.requireNonNull(response).isSuccessful()) {
                     throw new IOException(String.valueOf(response.code()));
                 } else {
                     try {
-                        userJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
-                        Log.d("OKHTTP RESPONSE", userJSON.toString());
+                        responseJSON = new JSONObject(Objects.requireNonNull(response.body()).string());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -432,14 +420,14 @@ public class httpClient {
             }
         });
 
-        while (userJSON == null) {
+        while (responseJSON == null) {
             Thread.sleep(10);
         }
 
-        int userID = userJSON.getInt("user_id");
-        String displayName = userJSON.getString("first_name") +
-                " " + userJSON.getString("surname");
-        String email = userJSON.getString("email");
+        int userID = responseJSON.getInt("user_id");
+        String displayName = responseJSON.getString("first_name") +
+                " " + responseJSON.getString("surname");
+        String email = responseJSON.getString("email");
         return new LoggedInUser(userID, username, displayName, email, MainActivity.getLoggedInUser().getCookies());
     }
 
@@ -457,16 +445,16 @@ public class httpClient {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Objects.requireNonNull(e).printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     throw new IOException(String.valueOf(response.code()));
                 } else {
-                    responseMessage[0] = response.body().string();
+                    responseMessage[0] = Objects.requireNonNull(response.body()).string();
                 }
             }
         });

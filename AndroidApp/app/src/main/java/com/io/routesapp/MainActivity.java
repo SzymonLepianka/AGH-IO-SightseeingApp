@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.io.routesapp.data.SharedRoutesPlacesRepository;
 import com.io.routesapp.data.model.LoggedInUser;
 import com.io.routesapp.data.httpClient;
 
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        loggedInUser = new LoggedInUser(0, "", "", "", new HashMap<String, String>());
+        loggedInUser = new LoggedInUser(0, "", "", "", new HashMap<>());
         loggedInUser.setCookie("AccessToken", intent.getStringExtra("AccessToken"));
         loggedInUser.setCookie("RefreshToken", intent.getStringExtra("RefreshToken"));
 
@@ -56,9 +57,7 @@ public class MainActivity extends AppCompatActivity {
             String username = intent.getStringExtra("username");
             try {
                 loggedInUser = HTTPClient.getUserData(username);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (InterruptedException | JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -84,9 +83,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
         View headerView = navigationView.getHeaderView(0);
-        TextView name = (TextView) headerView.findViewById(R.id.drawer_name);
+        TextView name = headerView.findViewById(R.id.drawer_name);
         name.setText(loggedInUser.getDisplayName());
-        TextView email = (TextView) headerView.findViewById((R.id.drawer_email));
+        TextView email = headerView.findViewById((R.id.drawer_email));
         email.setText(loggedInUser.getEmail());
 
         CheckAccessTokenThread thread = new CheckAccessTokenThread();

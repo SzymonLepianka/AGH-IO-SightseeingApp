@@ -7,17 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RatingBar;
-import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,17 +24,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.io.routesapp.MainActivity;
 import com.io.routesapp.R;
-import com.io.routesapp.SharedRoutesPlacesRepository;
 import com.io.routesapp.ui.places.model.Place;
 import com.io.routesapp.ui.places.model.PlaceReview;
 import com.io.routesapp.ui.places.model.PlaceReviewAdapter;
-import com.io.routesapp.ui.places.repository.PlaceReviewsRepository;
-
 import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.Objects;
 
+//Class displaying place details, location and reviews
 public class PlaceInformationFragment extends Fragment {
     RecyclerView mRecyclerView;
     PlaceReviewAdapter placeReviewAdapter;
@@ -78,7 +71,7 @@ public class PlaceInformationFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_place_information, container, false);
 
-        mRecyclerView = (RecyclerView) root.findViewById(R.id.review_list);
+        mRecyclerView = root.findViewById(R.id.review_list);
         layoutManager = new LinearLayoutManager(getActivity());
 
         firstComment = root.findViewById(R.id.firstPlaceComment);
@@ -94,12 +87,9 @@ public class PlaceInformationFragment extends Fragment {
         addFAB = root.findViewById(R.id.add_fab);
         reviewField = root.findViewById(R.id.review_field);
 
-        addFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reviewField.setVisibility(View.VISIBLE);
-                addFAB.setVisibility(View.GONE);
-            }
+        addFAB.setOnClickListener(v -> {
+            reviewField.setVisibility(View.VISIBLE);
+            addFAB.setVisibility(View.GONE);
         });
 
         RatingBar placeRatingBar = root.findViewById(R.id.place_rating_bar);
@@ -119,28 +109,24 @@ public class PlaceInformationFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!reviewText.getText().toString().isEmpty()){
+                if (!Objects.requireNonNull(reviewText.getText()).toString().isEmpty()){
                     sendFAB.setEnabled(true);
                 }
             }
         });
 
-        sendFAB.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                MainActivity.HTTPClient.addPlaceReview(
-                        new PlaceReview(
-                                String.valueOf(id),
-                                MainActivity.getLoggedInUser().getUsername(),
-                                Objects.requireNonNull(reviewText.getText()).toString()
-                        )
-                );
-                reviewField.setVisibility(View.GONE);
-                firstComment.setVisibility(View.INVISIBLE);
-                sendFAB.setVisibility(View.VISIBLE);
-                Toast.makeText(getContext(), "Your review will be added!", Toast.LENGTH_SHORT).show();
-            }
+        sendFAB.setOnClickListener(v -> {
+            MainActivity.HTTPClient.addPlaceReview(
+                    new PlaceReview(
+                            String.valueOf(id),
+                            MainActivity.getLoggedInUser().getUsername(),
+                            Objects.requireNonNull(reviewText.getText()).toString()
+                    )
+            );
+            reviewField.setVisibility(View.GONE);
+            firstComment.setVisibility(View.INVISIBLE);
+            sendFAB.setVisibility(View.VISIBLE);
+            Toast.makeText(getContext(), "Your review will be added!", Toast.LENGTH_SHORT).show();
         });
 
         return root;
@@ -156,8 +142,4 @@ public class PlaceInformationFragment extends Fragment {
         }
     }
 
-    private void initReviewsList() {
-        PlaceReviewsRepository repo = new PlaceReviewsRepository();
-        reviewsList = repo.getReviewsList();
-    }
 }

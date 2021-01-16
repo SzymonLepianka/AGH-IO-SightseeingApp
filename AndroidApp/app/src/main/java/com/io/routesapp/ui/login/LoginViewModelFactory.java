@@ -7,10 +7,9 @@ import androidx.annotation.NonNull;
 import com.io.routesapp.data.LoginDataSource;
 import com.io.routesapp.data.LoginRepository;
 
-/**
- * ViewModel provider factory to instantiate LoginViewModel.
- * Required given LoginViewModel has a non-empty constructor
- */
+
+ //ViewModel provider factory to instantiate LoginViewModel.
+ //Required given LoginViewModel has a non-empty constructor
 public class LoginViewModelFactory implements ViewModelProvider.Factory {
 
     @NonNull

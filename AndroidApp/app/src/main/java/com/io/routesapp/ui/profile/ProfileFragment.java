@@ -12,20 +12,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.navigation.Navigation;
 
 import com.io.routesapp.MainActivity;
 import com.io.routesapp.R;
-import com.io.routesapp.StartActivity;
-import com.io.routesapp.data.LoginDataSource;
-import com.io.routesapp.data.LoginRepository;
+import com.io.routesapp.ui.start.StartActivity;
 import com.io.routesapp.data.model.LoggedInUser;
-
-import java.util.Objects;
 
 public class ProfileFragment extends Fragment {
 
@@ -45,17 +37,17 @@ public class ProfileFragment extends Fragment {
         username.setText(loggedInUser.getUsername());
         displayName.setText(loggedInUser.getDisplayName());
         Button logout_button = root.findViewById(R.id.log_out);
-        logout_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences preferences = requireActivity().getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.clear();
-                editor.apply();
-                MainActivity.logoutButtonPressed = true;
-                Intent intent = new Intent(getContext(), StartActivity.class);
-                startActivity(intent);
-            }
+
+        //delete username and authorization and refresh token on logout
+        logout_button.setOnClickListener(v -> {
+            SharedPreferences preferences = requireActivity()
+                    .getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.clear();
+            editor.apply();
+            MainActivity.logoutButtonPressed = true; //a flag to signal that main activity must not save user's data
+            Intent intent = new Intent(getContext(), StartActivity.class);
+            startActivity(intent);
         });
         return root;
     }

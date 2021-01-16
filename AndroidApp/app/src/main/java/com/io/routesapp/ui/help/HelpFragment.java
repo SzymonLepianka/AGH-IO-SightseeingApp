@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.io.routesapp.R;
 
+//fragment for "Help" section of the application
 public class HelpFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -20,7 +21,6 @@ public class HelpFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_help, container, false);
-        return root;
+        return inflater.inflate(R.layout.fragment_help, container, false);
     }
 }
