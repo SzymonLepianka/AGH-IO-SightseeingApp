@@ -45,7 +45,9 @@ public class UsersController {
     public @ResponseBody
     String getUser(@PathVariable String username, HttpServletResponse httpServletResponse) throws IOException, InterruptedException, ParseException {
 
+        //autoryzacja
         String accessToken = Authorization.Authorize(username, httpServletResponse);
+
         User userData = GetUserData.getUserData(username, accessToken, usersRepository, httpServletResponse);
         return view.getUserData(userData);
     }
@@ -65,7 +67,7 @@ public class UsersController {
 
     @DeleteMapping(path = "/{id}")
     public @ResponseBody
-    String deleteUser(@PathVariable String id, HttpServletResponse httpServletResponse) {
+    String deleteUser(@PathVariable String id, HttpServletResponse httpServletResponse) throws IOException, InterruptedException {
 
         //autoryzacja
         String username = DataFromDB.getUsernameById(id, usersRepository);
@@ -78,7 +80,7 @@ public class UsersController {
 
     @GetMapping(path = "/{user_id}/placeVotes/{place_id}")
     public @ResponseBody
-    String didUserVoteForPlace(@PathVariable String user_id, @PathVariable String place_id, HttpServletResponse httpServletResponse) {
+    String didUserVoteForPlace(@PathVariable String user_id, @PathVariable String place_id, HttpServletResponse httpServletResponse) throws IOException, InterruptedException {
 
         //autoryzacja
         String username = DataFromDB.getUsernameById(user_id, usersRepository);
@@ -99,7 +101,7 @@ public class UsersController {
 
     @PostMapping(path = "/{user_id}/placeVotes/{place_id}")
     public @ResponseBody
-    String userVoteForPlace(@PathVariable String user_id, @PathVariable String place_id, @RequestParam String vote, HttpServletResponse httpServletResponse) {
+    String userVoteForPlace(@PathVariable String user_id, @PathVariable String place_id, @RequestParam String vote, HttpServletResponse httpServletResponse) throws IOException, InterruptedException {
 
         //autoryzacja
         String username = DataFromDB.getUsernameById(user_id, usersRepository);
@@ -125,7 +127,7 @@ public class UsersController {
 
     @GetMapping(path = "/{user_id}/routeVotes/{route_id}")
     public @ResponseBody
-    String didUserVoteForRoute(@PathVariable String user_id, @PathVariable String route_id, HttpServletResponse httpServletResponse) {
+    String didUserVoteForRoute(@PathVariable String user_id, @PathVariable String route_id, HttpServletResponse httpServletResponse) throws IOException, InterruptedException {
 
         //autoryzacja
         String username = DataFromDB.getUsernameById(user_id, usersRepository);
@@ -146,7 +148,7 @@ public class UsersController {
 
     @PostMapping(path = "/{user_id}/routeVotes/{route_id}")
     public @ResponseBody
-    String userVoteForRoute(@PathVariable String user_id, @PathVariable String route_id, @RequestParam String vote, HttpServletResponse httpServletResponse) {
+    String userVoteForRoute(@PathVariable String user_id, @PathVariable String route_id, @RequestParam String vote, HttpServletResponse httpServletResponse) throws IOException, InterruptedException {
 
         //autoryzacja
         String username = DataFromDB.getUsernameById(user_id, usersRepository);
