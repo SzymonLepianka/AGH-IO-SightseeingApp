@@ -32,15 +32,15 @@ public class StartActivity extends AppCompatActivity {
 
         SharedPreferences mySharedPreferences = getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
         cookies = new HashMap<>();
-        if(mySharedPreferences.contains("AccessToken")) {
-            cookies.put("AccessToken", mySharedPreferences.getString("AccessToken", ""));
+        if(mySharedPreferences.contains("AccessToken2")) {
+            cookies.put("AccessToken2", mySharedPreferences.getString("AccessToken2", ""));
             try {
-                if (HTTPClient.isTokenValid(cookies.get("AccessToken"))) {
-                    if (mySharedPreferences.contains("RefreshToken")) {
-                        cookies.put("RefreshToken", mySharedPreferences.getString("RefreshToken", ""));
+                if (HTTPClient.isTokenValid(cookies.get("AccessToken2"))) {
+                    if (mySharedPreferences.contains("RefreshToken2")) {
+                        cookies.put("RefreshToken2", mySharedPreferences.getString("RefreshToken2", ""));
                     }
                     String username = null;
-                    if (mySharedPreferences.contains("RefreshToken")) {
+                    if (mySharedPreferences.contains("RefreshToken2")) {
                         username = mySharedPreferences.getString("username", "");
                     }
 
@@ -48,8 +48,8 @@ public class StartActivity extends AppCompatActivity {
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         intent.putExtra("PreviousActivity", "start");
                         intent.putExtra("username", username);
-                        intent.putExtra("AccessToken", cookies.get("AccessToken"));
-                        intent.putExtra("RefreshToken", cookies.get("RefreshToken"));
+                        intent.putExtra("AccessToken2", cookies.get("AccessToken2"));
+                        intent.putExtra("RefreshToken2", cookies.get("RefreshToken2"));
                         startActivity(intent);
                     } catch (Exception e) {
                         e.printStackTrace();

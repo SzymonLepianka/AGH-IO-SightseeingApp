@@ -36,10 +36,12 @@ public class httpClient {
     private String baseURL;
     private String accessToken;
 
+    private boolean failure = false;
+
     public httpClient(Context context, String activityName) {
         baseURL = context.getResources().getString(R.string.baseUrl);
         if (activityName.equals("MainActivity")) {
-            accessToken = MainActivity.getLoggedInUser().getCookies().get("AccessToken");
+            accessToken = MainActivity.getLoggedInUser().getCookies().get("AccessToken2");
         }
     }
 
@@ -49,7 +51,7 @@ public class httpClient {
         String url = baseURL + "/places"; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+        cookieHelper.setCookie(url, "AccessToken2" , accessToken);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(cookieHelper.cookieJar())
@@ -116,7 +118,7 @@ public class httpClient {
         String url = baseURL + "/places/" + id; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+        cookieHelper.setCookie(url, "AccessToken2" , accessToken);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(cookieHelper.cookieJar())
@@ -172,7 +174,7 @@ public class httpClient {
         String url = baseURL + "/places/" + id + "/comments"; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+        cookieHelper.setCookie(url, "AccessToken2" , accessToken);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(cookieHelper.cookieJar())
@@ -226,7 +228,7 @@ public class httpClient {
         String url = baseURL + "/places/" + review.getPlaceID() + "/comments"; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+        cookieHelper.setCookie(url, "AccessToken2" , accessToken);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(cookieHelper.cookieJar())
@@ -275,7 +277,7 @@ public class httpClient {
         String url = baseURL + "/routes"; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+        cookieHelper.setCookie(url, "AccessToken2" , accessToken);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(cookieHelper.cookieJar())
@@ -329,7 +331,7 @@ public class httpClient {
         String url = baseURL + "/routes/" + id; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+        cookieHelper.setCookie(url, "AccessToken2" , accessToken);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(cookieHelper.cookieJar())
@@ -379,7 +381,7 @@ public class httpClient {
         String url = baseURL + "/routes/" + id + "/pointsOfRoute"; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+        cookieHelper.setCookie(url, "AccessToken2" , accessToken);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(cookieHelper.cookieJar())
@@ -432,7 +434,7 @@ public class httpClient {
         String url = baseURL + "routes/" + id + "/comments"; //10.0.2.2 - localhost
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+        cookieHelper.setCookie(url, "AccessToken2" , accessToken);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(cookieHelper.cookieJar())
@@ -485,7 +487,7 @@ public class httpClient {
     public void addRouteReview(RouteReview review){
         String url = baseURL + "routes/" + review.getRouteID() + "/comments";
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+        cookieHelper.setCookie(url, "AccessToken2" , accessToken);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(cookieHelper.cookieJar())
@@ -517,7 +519,6 @@ public class httpClient {
         });
     }
 
-    //nie było ulubionych \Gosia
     public ArrayList<Route> getFavouriteRoutes(int userID){
         //TODO get favourite routes list for this user
         return  new ArrayList<>();
@@ -527,7 +528,7 @@ public class httpClient {
         String url = baseURL + "users/" + username;
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken" , accessToken);
+        cookieHelper.setCookie(url, "AccessToken2" , accessToken);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(cookieHelper.cookieJar())
@@ -541,6 +542,7 @@ public class httpClient {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Objects.requireNonNull(e).printStackTrace();
+                failure = true;
             }
 
             @Override
@@ -557,8 +559,12 @@ public class httpClient {
             }
         });
 
-        while (responseJSON == null) {
+        while (responseJSON == null && !failure) {
             Thread.sleep(10);
+        }
+
+        if (failure) {
+            throw new VerifyError("User unauthorized");
         }
 
         int userID = responseJSON.getInt("user_id");

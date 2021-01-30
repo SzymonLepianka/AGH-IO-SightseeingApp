@@ -115,8 +115,8 @@ public class LoginActivity extends AppCompatActivity {
         intent.putExtra("username", model.getUsername());
         intent.putExtra("displayName", model.getDisplayName());
         intent.putExtra("email", model.getEmail());
-        intent.putExtra("AccessToken", model.getCookies().get("AccessToken"));
-        intent.putExtra("RefreshToken", model.getCookies().get("RefreshToken"));
+        intent.putExtra("AccessToken2", model.getCookies().get("AccessToken2"));
+        intent.putExtra("RefreshToken2", model.getCookies().get("RefreshToken2"));
         startActivity(intent);
     }
 

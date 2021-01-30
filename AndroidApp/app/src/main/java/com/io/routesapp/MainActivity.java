@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         loggedInUser = new LoggedInUser(0, "", "", "", new HashMap<>());
-        loggedInUser.setCookie("AccessToken", intent.getStringExtra("AccessToken"));
-        loggedInUser.setCookie("RefreshToken", intent.getStringExtra("RefreshToken"));
+        loggedInUser.setCookie("AccessToken2", intent.getStringExtra("AccessToken2"));
+        loggedInUser.setCookie("RefreshToken2", intent.getStringExtra("RefreshToken2"));
 
         HTTPClient = new httpClient(this.getApplicationContext(), "MainActivity");
 
@@ -112,8 +112,8 @@ public class MainActivity extends AppCompatActivity {
         if (!logoutButtonPressed) {
             SharedPreferences mySharedPreferences = getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = mySharedPreferences.edit();
-            editor.putString("AccessToken", loggedInUser.getCookies().get("AccessToken"));
-            editor.putString("RefreshToken", loggedInUser.getCookies().get("RefreshToken"));
+            editor.putString("AccessToken2", loggedInUser.getCookies().get("AccessToken2"));
+            editor.putString("RefreshToken2", loggedInUser.getCookies().get("RefreshToken2"));
             editor.putString("username", loggedInUser.getUsername());
             editor.apply();
         }
@@ -125,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
         if (!logoutButtonPressed) {
             SharedPreferences mySharedPreferences = getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = mySharedPreferences.edit();
-            editor.putString("AccessToken", loggedInUser.getCookies().get("AccessToken"));
-            editor.putString("RefreshToken", loggedInUser.getCookies().get("RefreshToken"));
+            editor.putString("AccessToken2", loggedInUser.getCookies().get("AccessToken2"));
+            editor.putString("RefreshToken2", loggedInUser.getCookies().get("RefreshToken2"));
             editor.putString("username", loggedInUser.getUsername());
             editor.apply();
         }

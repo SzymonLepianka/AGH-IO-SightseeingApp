@@ -14,11 +14,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class CheckAccessTokenThread extends Thread {
-    String DPRefreshTokenUrl = "http://10.0.2.2:8081/api/refreshToken?clientID=1&refreshToken=";
+    String DPRefreshTokenUrl = "http://10.0.2.2:8081/api/refreshToken?clientID=2&refreshToken=";
 
     @Override
     public void run() {
-        String accessToken = MainActivity.getLoggedInUser().getCookies().get("AccessToken");
+        String accessToken = MainActivity.getLoggedInUser().getCookies().get("AccessToken2");
 
         while (true) {
             while (!ifExpiresSoon(accessToken)) {
@@ -54,7 +54,7 @@ public class CheckAccessTokenThread extends Thread {
     private void refreshTokens() {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(DPRefreshTokenUrl + MainActivity.getLoggedInUser().getCookies().get("RefreshToken"))
+                .url(DPRefreshTokenUrl + MainActivity.getLoggedInUser().getCookies().get("RefreshToken2"))
                 .build();
 
         client.newCall(request).enqueue(new Callback() {

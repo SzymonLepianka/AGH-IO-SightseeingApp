@@ -43,11 +43,11 @@ public class GetUserData {
             System.out.println("User nie istnieje w bazie, wykonywany jest request");
             String url = "http://localhost:8081/api/getUserData?clientID=2&accessToken=" + accessToken;
             OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-            cookieHelper.setCookie(url, "AccessToken", accessToken);
+            cookieHelper.setCookie(url, "AccessToken2", accessToken);
             HttpClient client = HttpClient.newBuilder().cookieHandler(new CookieManager()).build();
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
             CookieStore cookieStore = ((CookieManager) (client.cookieHandler().get())).getCookieStore();
-            cookieStore.add(URI.create(url), new HttpCookie("AccessToken", accessToken));
+            cookieStore.add(URI.create(url), new HttpCookie("AccessToken2", accessToken));
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             JSONObject jsonObject1 = new JSONObject(response.body());
 

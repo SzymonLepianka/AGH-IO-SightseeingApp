@@ -30,7 +30,7 @@ public class Authorization {
         String appSecret = "222222";
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        var accessTokenCookie = WebUtils.getCookie(request, "AccessToken");
+        var accessTokenCookie = WebUtils.getCookie(request, "AccessToken2");
         if (accessTokenCookie == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "accessTokenCookie is null");
         } else {

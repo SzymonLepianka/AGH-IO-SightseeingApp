@@ -120,7 +120,7 @@ public class LoginDataSource {
         String url = IObaseUrl + "users/" + username;
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
-        cookieHelper.setCookie(url, "AccessToken" , cookies.get("AccessToken"));
+        cookieHelper.setCookie(url, "AccessToken2" , cookies.get("AccessToken2"));
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(cookieHelper.cookieJar())
