@@ -37,17 +37,19 @@ public class GetUserData {
             if (dbResponse.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found in data base");
             }
-            System.out.println("User istnieje w bazie");
+            System.out.println("User exists in the database (no request to aouth service)");
             user = dbResponse.get();
         } else {
-            System.out.println("User nie istnieje w bazie, wykonywany jest request");
+            System.out.println("User does not exist in the database, request to oauth service is executed");
             String url = "http://localhost:8081/api/getUserData?clientID=2&accessToken=" + accessToken;
             OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
             cookieHelper.setCookie(url, "AccessToken2", accessToken);
             HttpClient client = HttpClient.newBuilder().cookieHandler(new CookieManager()).build();
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
             CookieStore cookieStore = ((CookieManager) (client.cookieHandler().get())).getCookieStore();
-            cookieStore.add(URI.create(url), new HttpCookie("AccessToken2", accessToken));
+            HttpCookie accessToken2Cookie = new HttpCookie("AccessToken2", accessToken);
+            accessToken2Cookie.setPath("/");
+            cookieStore.add(URI.create(url), accessToken2Cookie);
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             JSONObject jsonObject1 = new JSONObject(response.body());
 

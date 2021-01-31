@@ -52,7 +52,6 @@ public class UsersController {
         return view.getUserData(userData);
     }
 
-
     @PostMapping(path = "/add")
     public @ResponseBody
     String addUser(@RequestParam String username, @RequestParam String password, @RequestParam String email,
