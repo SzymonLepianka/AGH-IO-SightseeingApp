@@ -19,6 +19,8 @@ import com.io.routesapp.R;
 import com.io.routesapp.ui.start.StartActivity;
 import com.io.routesapp.data.model.LoggedInUser;
 
+import org.json.JSONException;
+
 public class ProfileFragment extends Fragment {
 
     private LoggedInUser loggedInUser;
@@ -27,6 +29,25 @@ public class ProfileFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loggedInUser = MainActivity.getLoggedInUser();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        try {
+            loggedInUser = MainActivity.HTTPClient.getUserData(MainActivity.getLoggedInUser().getUsername());
+        } catch (InterruptedException | JSONException e) {
+            e.printStackTrace();
+        } catch (VerifyError e){
+            SharedPreferences preferences = requireActivity()
+                    .getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.clear();
+            editor.apply();
+            MainActivity.logoutButtonPressed = true; //a flag to signal that main activity must not save user's data
+            Intent intent = new Intent(getContext(), StartActivity.class);
+            startActivity(intent);
+        }
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,

@@ -1,5 +1,4 @@
 package com.io.routesapp;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +11,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.io.routesapp.data.SharedRoutesPlacesRepository;
 import com.io.routesapp.data.model.LoggedInUser;
 import com.io.routesapp.data.httpClient;
-
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;

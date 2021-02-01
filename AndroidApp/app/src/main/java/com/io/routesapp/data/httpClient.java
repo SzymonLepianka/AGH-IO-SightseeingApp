@@ -524,7 +524,7 @@ public class httpClient {
         return  new ArrayList<>();
     }
 
-    public LoggedInUser getUserData(String username) throws InterruptedException, JSONException {
+    public LoggedInUser getUserData(String username) throws InterruptedException, JSONException, VerifyError {
         String url = baseURL + "users/" + username;
 
         OkHttp3CookieHelper cookieHelper = new OkHttp3CookieHelper();
@@ -541,13 +541,15 @@ public class httpClient {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Objects.requireNonNull(e).printStackTrace();
-                failure = true;
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!Objects.requireNonNull(response).isSuccessful()) {
+
+                    if (response.code() == 401){
+                        failure = true;
+                    }
                     throw new IOException(String.valueOf(response.code()));
                 } else {
                     try {
@@ -559,12 +561,12 @@ public class httpClient {
             }
         });
 
-        while (responseJSON == null && !failure) {
-            Thread.sleep(10);
-        }
-
         if (failure) {
             throw new VerifyError("User unauthorized");
+        }
+
+        while (responseJSON == null && !failure) {
+            Thread.sleep(10);
         }
 
         int userID = responseJSON.getInt("user_id");
