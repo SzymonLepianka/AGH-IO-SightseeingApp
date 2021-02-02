@@ -29,15 +29,21 @@ public class LoginDataSource {
     String DPLoginUrl = "http://10.0.2.2:8081/web/login";
     String DPExchangeUrl = "http://10.0.2.2:8081/api/createToken?clientID=2&authCode=";
     HashMap<String, String> cookies = new HashMap<>();
+    Integer responseErr;
 
     public Result<LoggedInUser> login(String username, String password) {
 
         try {
+            try {
                 getAuthCode(username, password);
-                getAccessTokenAndRefreshToken();
-                LoggedInUser user = getUserData(username);
+            }
+            catch (Exception e){
+                return new Result.Error(new Exception("Login failed.", e));
+            }
+            getAccessTokenAndRefreshToken();
+            LoggedInUser user = getUserData(username);
 
-                return new Result.Success<>(user);
+            return new Result.Success<>(user);
             } catch (Exception e) {
                 return new Result.Error(new IOException("Error logging in", e));
             }
@@ -47,7 +53,9 @@ public class LoginDataSource {
         MainActivity.getLoggedInUser().getCookies().clear();
     }
 
-    private void getAuthCode(String username, String password) throws InterruptedException {
+    private void getAuthCode(String username, String password) throws InterruptedException, IOException {
+        responseErr = null;
+
         OkHttpClient client = new OkHttpClient();
 
         RequestBody body = new FormBody.Builder()
@@ -71,7 +79,7 @@ public class LoginDataSource {
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    throw new IOException("Error in response from DP Server :( error code: " + response.code());
+                    responseErr = response.code();
                 } else {
                     String cookie = (Objects.requireNonNull(response.headers().get("Set-Cookie")).split(";")[0]);
                     cookies.put(cookie.split("=")[0], cookie.split("=")[1]);
@@ -79,8 +87,12 @@ public class LoginDataSource {
             }
         });
 
-        while (cookies.isEmpty()){
+        while (cookies.isEmpty() && responseErr == null){
             Thread.sleep(10);
+        }
+
+        if (responseErr != null) {
+            throw new IOException("Error in response from DP Server :( error code: " + responseErr);
         }
     }
 
