@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +40,7 @@ public class ProfileFragment extends Fragment {
         } catch (InterruptedException | JSONException e) {
             e.printStackTrace();
         } catch (VerifyError e){
+            Toast.makeText(requireContext(), "Not authorized. Please, log in.", Toast.LENGTH_SHORT).show();
             SharedPreferences preferences = requireActivity()
                     .getSharedPreferences(getString(R.string.settings), Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
